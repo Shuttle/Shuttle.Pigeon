@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Shuttle.Pigeon.Server": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "CONFIGURATION_FOLDER": "."
+      }
+    }
+  }
+}

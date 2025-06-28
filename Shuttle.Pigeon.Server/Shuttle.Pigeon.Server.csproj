@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>602d31de-0c37-47a9-bec1-33038bd7a781</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Shuttle.Core.TransactionScope" Version="20.0.0" />
+    <PackageReference Include="Shuttle.Esb.AzureStorageQueues" Version="20.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.4" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shuttle.Pigeon.Data\Shuttle.Pigeon.Data.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon.Messages\Shuttle.Pigeon.Messages.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon.Smtp\Shuttle.Pigeon.Smtp.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon\Shuttle.Pigeon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
