@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Shuttle.Pigeon.Data\Shuttle.Pigeon.Data.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon.Messages\Shuttle.Pigeon.Messages.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon.Postmark\Shuttle.Pigeon.Postmark.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon.Smtp\Shuttle.Pigeon.Smtp.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon\Shuttle.Pigeon.csproj" />
   </ItemGroup>

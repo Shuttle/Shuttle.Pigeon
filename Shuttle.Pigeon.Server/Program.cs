@@ -9,6 +9,7 @@ using Shuttle.Core.TransactionScope;
 using Shuttle.Esb;
 using Shuttle.Esb.AzureStorageQueues;
 using Shuttle.Pigeon.Data;
+using Shuttle.Pigeon.Postmark;
 using Shuttle.Pigeon.Smtp;
 
 namespace Shuttle.Pigeon.Server;
@@ -70,6 +71,7 @@ internal class Program
                     })
                     .AddPigeon(pigeonBuilder =>
                     {
+                        pigeonBuilder.TryAddPostmark(configuration);
                         pigeonBuilder.TryAddSmtp(configuration);
                     })
                     .AddPigeonDataAccess();

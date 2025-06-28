@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>28e970ce-c456-45d5-896e-edf0e00fca4e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="NUnit" Version="4.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Shuttle.Pigeon.Postmark\Shuttle.Pigeon.Postmark.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon.SendGrid\Shuttle.Pigeon.SendGrid.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon.Smtp\Shuttle.Pigeon.Smtp.csproj" />
+  </ItemGroup>
+
+</Project>

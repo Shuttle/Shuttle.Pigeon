@@ -6,7 +6,7 @@ namespace Shuttle.Pigeon.Postmark;
 
 public static class ServiceCollectionExtensions
 {
-    public static PigeonBuilder TryAddSmtp(this PigeonBuilder pigeonBuilder, IConfiguration configuration)
+    public static PigeonBuilder TryAddPostmark(this PigeonBuilder pigeonBuilder, IConfiguration configuration)
     {
         var options = configuration.GetSection(PostmarkOptions.SectionName).Get<PostmarkOptions>();
 

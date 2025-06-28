@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.Postmark", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.WebApi", "Shuttle.Pigeon.WebApi\Shuttle.Pigeon.WebApi.csproj", "{668D5936-0568-4A4E-8497-C4F6D7F42214}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.Tests", "Shuttle.Pigeon.Tests\Shuttle.Pigeon.Tests.csproj", "{94FA8A9A-7B8E-4B47-9E0C-F1DF91971CC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.SendGrid", "Shuttle.Pigeon.SendGrid\Shuttle.Pigeon.SendGrid.csproj", "{5A4091B7-D3F4-4EA8-B6BB-A39C9AE22629}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{668D5936-0568-4A4E-8497-C4F6D7F42214}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{668D5936-0568-4A4E-8497-C4F6D7F42214}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{668D5936-0568-4A4E-8497-C4F6D7F42214}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94FA8A9A-7B8E-4B47-9E0C-F1DF91971CC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94FA8A9A-7B8E-4B47-9E0C-F1DF91971CC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94FA8A9A-7B8E-4B47-9E0C-F1DF91971CC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94FA8A9A-7B8E-4B47-9E0C-F1DF91971CC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A4091B7-D3F4-4EA8-B6BB-A39C9AE22629}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A4091B7-D3F4-4EA8-B6BB-A39C9AE22629}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A4091B7-D3F4-4EA8-B6BB-A39C9AE22629}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A4091B7-D3F4-4EA8-B6BB-A39C9AE22629}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

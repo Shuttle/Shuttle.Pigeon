@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using PostmarkDotNet;
+using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.Postmark;
 
@@ -9,24 +10,16 @@ public class PostmarkMessageSender : IMessageSender
 
     public PostmarkMessageSender(IOptions<PostmarkOptions> postmarkOptions)
     {
-        if (postmarkOptions == null)
-        {
-            throw new ArgumentNullException(nameof(postmarkOptions));
-        }
-
-        _client = new(postmarkOptions.Value.ServerToken);
+        _client = new(Guard.AgainstNull(Guard.AgainstNull(postmarkOptions).Value).ServerToken);
     }
 
     public string Channel => "email";
 
     public async Task SendAsync(Message message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        Guard.AgainstNull(message);
 
-        var postmarkMessage = new PostmarkMessage()
+        var msg = new PostmarkMessage()
         {
             To = string.Join(',', message.Recipients.Where(item => item.Type == RecipientType.To).Select(item => item.Identifier)),
             Cc = string.Join(',', message.Recipients.Where(item => item.Type == RecipientType.Cc).Select(item => item.Identifier)),
@@ -38,28 +31,28 @@ public class PostmarkMessageSender : IMessageSender
 
         if (message.ContentType.Equals("text/html", StringComparison.InvariantCultureIgnoreCase))
         {
-            postmarkMessage.HtmlBody = message.Content;
+            msg.HtmlBody = message.Content;
         }
         else
         {
-            postmarkMessage.TextBody = message.Content;
+            msg.TextBody = message.Content;
         }
 
         if (message.HasSender)
         {
-            postmarkMessage.From = message.Sender;
+            msg.From = message.Sender;
         }
 
         foreach (var attachment in message.GetAttachments())
         {
-            postmarkMessage.AddAttachment(attachment.Content, attachment.Name, attachment.ContentType);
+            msg.AddAttachment(attachment.Content, attachment.Name, attachment.ContentType);
         }
 
-        var sendResult = await _client.SendMessageAsync(postmarkMessage);
+        var response = await _client.SendMessageAsync(msg);
 
-        if (sendResult.Status != PostmarkStatus.Success)
+        if (response.Status != PostmarkStatus.Success)
         {
-            throw new($"Failed to send email: {sendResult.Message}");
+            throw new($"Failed to send email: {response.Message}");
         }
     }
 }

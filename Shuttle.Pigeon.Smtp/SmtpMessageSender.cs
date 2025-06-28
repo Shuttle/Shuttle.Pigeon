@@ -18,17 +18,14 @@ public class SmtpMessageSender : IMessageSender
 
     public async Task SendAsync(Message message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        Guard.AgainstNull(message);
 
         using (var client = new SmtpClient(message.FindParameter("Host")?.GetValue<string>() ?? _smtpOptions.Host, message.FindParameter("Port")?.GetValue<int>() ?? _smtpOptions.Port))
         {
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(message.FindParameter("Username")?.GetValue<string>() ?? _smtpOptions.Username, message.FindParameter("Password")?.GetValue<string>() ?? _smtpOptions.Password);
 
-            var mail = new MailMessage
+            var msg = new MailMessage
             {
                 Subject = message.Subject,
                 Body = message.Content,
@@ -37,11 +34,11 @@ public class SmtpMessageSender : IMessageSender
 
             if (message.HasSender)
             {
-                mail.From = new(message.Sender, message.SenderDisplayName);
+                msg.From = new(message.Sender, message.SenderDisplayName);
             }
             else
             {
-                mail.From = new(_smtpOptions.SenderAddress, _smtpOptions.SenderDisplayName);
+                msg.From = new(_smtpOptions.SenderAddress, _smtpOptions.SenderDisplayName);
             }
 
             foreach (var recipient in message.Recipients)
@@ -50,17 +47,17 @@ public class SmtpMessageSender : IMessageSender
                 {
                     case RecipientType.To:
                     {
-                        mail.To.Add(recipient.Identifier);
+                        msg.To.Add(recipient.Identifier);
                         break;
                     }
                     case RecipientType.Cc:
                     {
-                        mail.CC.Add(recipient.Identifier);
+                        msg.CC.Add(recipient.Identifier);
                         break;
                     }
                     case RecipientType.Bcc:
                     {
-                        mail.Bcc.Add(recipient.Identifier);
+                        msg.Bcc.Add(recipient.Identifier);
                         break;
                     }
                 }
@@ -70,11 +67,11 @@ public class SmtpMessageSender : IMessageSender
             {
                 using (var stream = new MemoryStream(attachment.Content))
                 {
-                    mail.Attachments.Add(new(stream, attachment.ContentType));
+                    msg.Attachments.Add(new(stream, attachment.ContentType));
                 }
             }
 
-            client.Send(mail);
+            client.Send(msg);
         }
 
         await Task.CompletedTask;
