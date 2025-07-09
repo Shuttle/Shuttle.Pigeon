@@ -12,32 +12,31 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPigeonDataAccess(this IServiceCollection services, Action<PigeonDataBuilder>? builder = null)
     {
-        var sqlServerStorageBuilder = new PigeonDataBuilder(Guard.AgainstNull(services));
+        var pigeonDataBuilder = new PigeonDataBuilder(Guard.AgainstNull(services));
 
-        builder?.Invoke(sqlServerStorageBuilder);
+        builder?.Invoke(pigeonDataBuilder);
 
         services.TryAddSingleton<IValidateOptions<PigeonDataOptions>, PigeonDataOptionsValidator>();
 
         services.AddOptions<PigeonDataOptions>().Configure(options =>
         {
-            options.ConnectionStringName = sqlServerStorageBuilder.Options.ConnectionStringName;
-            options.Schema = sqlServerStorageBuilder.Options.Schema;
-            options.MigrationsHistoryTableName = sqlServerStorageBuilder.Options.MigrationsHistoryTableName;
-            options.CommandTimeout = sqlServerStorageBuilder.Options.CommandTimeout;
+            options.ConnectionStringName = pigeonDataBuilder.Options.ConnectionStringName;
+            options.MigrationsHistoryTableName = pigeonDataBuilder.Options.MigrationsHistoryTableName;
+            options.CommandTimeout = pigeonDataBuilder.Options.CommandTimeout;
         });
 
         services.AddDbContextFactory<PigeonDbContext>((provider, dbContextOptionsBuilder) =>
         {
             var configuration = provider.GetRequiredService<IConfiguration>();
 
-            var connectionString = configuration.GetConnectionString("Pigeon");
+            var connectionString = configuration.GetConnectionString(pigeonDataBuilder.Options.ConnectionStringName);
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new ArgumentException("Could not find a connection string for 'Pigeon'.");
+                throw new ArgumentException($"Could not find a connection string named '{pigeonDataBuilder.Options.ConnectionStringName}'.");
             }
 
-            dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptions => { sqlServerOptions.CommandTimeout(300); });
+            dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptions => { sqlServerOptions.CommandTimeout(pigeonDataBuilder.Options.CommandTimeout); });
         });
 
         return services;

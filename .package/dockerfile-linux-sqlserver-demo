@@ -1,0 +1,21 @@
+﻿FROM mcr.microsoft.com/mssql/server:2022-latest
+
+USER root
+
+RUN mkdir /tmp/db && chown -R mssql /tmp/db
+
+COPY ./deployment/shuttle-pigeon-efbundle-linux-x64 /tmp/db/efbundle-linux-x64
+COPY ./data-appsettings.json tmp/db/appsettings.json
+
+ARG DBNAME=Access
+ARG PASSWORD=Pass!000
+
+ENV ACCEPT_EULA=Y
+ENV SA_PASSWORD=$PASSWORD
+
+RUN ( /opt/mssql/bin/sqlservr & ) | grep -q "Service Broker manager has started" \
+    && /tmp/db/efbundle-linux-x64 --connection "Data Source=.;Initial Catalog=Access;user id=sa;password=Pass!000;TrustServerCertificate=true" --verbose \
+    && rm -r /tmp/db \
+    && pkill sqlservr 
+
+ENTRYPOINT ["/opt/mssql/bin/sqlservr"]

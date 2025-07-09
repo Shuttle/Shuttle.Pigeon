@@ -11,35 +11,33 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<PigeonDbCo
 {
     public PigeonDbContext CreateDbContext(string[] args)
     {
+        /*
+            Right-click on `Shuttle.Access.Data` and select `Manage User Secrets`
+            {
+              "ConnectionStrings": {
+                "Pigeon": "Server=.;Database=Pigeon;User ID=<user>;Password=<password>;Trust Server Certificate=true;"
+              },
+              "Shuttle": {
+                "Pigeon": {
+                  "Data": {
+                    "ConnectionStringName": "Pigeon"
+                  }
+                }
+              }
+            }
+        */
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
+            .AddUserSecrets<DesignTimeDbContextFactory>()
             .AddCommandLine(args)
             .Build();
-
-        var pigeonDataOptions = configuration.GetSection(PigeonDataOptions.SectionName).Get<PigeonDataOptions>()!;
-
-        if (pigeonDataOptions == null)
-        {
-            throw new InvalidOperationException($"Could not find a section called '{PigeonDataOptions.SectionName}' in the configuration.");
-        }
-
-        var schemaOverride = configuration["SchemaOverride"];
-
-        if (!string.IsNullOrWhiteSpace(schemaOverride))
-        {
-            Console.WriteLine(@$"[schema-override] : original schema = '{pigeonDataOptions.Schema}' / schema override = '{schemaOverride}'");
-
-            pigeonDataOptions.Schema = schemaOverride;
-        }
 
         var optionsBuilder = new DbContextOptionsBuilder<PigeonDbContext>();
 
         optionsBuilder
-            .UseSqlServer(configuration.GetConnectionString(pigeonDataOptions.ConnectionStringName),
-                builder => builder.MigrationsHistoryTable(pigeonDataOptions.MigrationsHistoryTableName, pigeonDataOptions.Schema));
+            .UseSqlServer(configuration.GetConnectionString("Pigeon"));
 
         optionsBuilder.ReplaceService<IMigrationsAssembly, SchemaMigrationsAssembly>();
 
-        return new(Options.Create(pigeonDataOptions), optionsBuilder.Options);
+        return new(Options.Create(new PigeonDataOptions()), optionsBuilder.Options);
     }
 }

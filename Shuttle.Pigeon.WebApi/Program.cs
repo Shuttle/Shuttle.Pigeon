@@ -1,6 +1,4 @@
 using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Shuttle.Access.AspNetCore;
@@ -8,7 +6,6 @@ using Shuttle.Access.RestClient;
 using Shuttle.Esb;
 using Shuttle.Esb.AzureStorageQueues;
 using Shuttle.Pigeon.Data;
-using System.Net.Mail;
 
 namespace Shuttle.Pigeon.WebApi;
 
@@ -48,7 +45,7 @@ public class Program
             .AddSwaggerGen(options =>
             {
                 options.SchemaGeneratorOptions.SchemaIdSelector = type => type.FullName;
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Bearer", new()
                 {
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
@@ -57,12 +54,12 @@ public class Program
                     In = ParameterLocation.Header,
                     Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer {jwt}\""
                 });
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                options.AddSecurityRequirement(new()
                 {
                     {
-                        new OpenApiSecurityScheme
+                        new()
                         {
-                            Reference = new OpenApiReference
+                            Reference = new()
                             {
                                 Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer"
@@ -77,7 +74,10 @@ public class Program
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddSerilog();
             })
-            .AddServiceBus(builder => { webApplicationBuilder.Configuration.GetSection(ServiceBusOptions.SectionName).Bind(builder.Options); })
+            .AddServiceBus(builder =>
+            {
+                webApplicationBuilder.Configuration.GetSection(ServiceBusOptions.SectionName).Bind(builder.Options);
+            })
             .AddAzureStorageQueues(builder =>
             {
                 var queueOptions = webApplicationBuilder.Configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();

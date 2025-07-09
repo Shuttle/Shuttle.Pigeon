@@ -1,0 +1,48 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Package" ToolsVersion="15">
+    <PropertyGroup>
+        <LinuxRuntimeIdentifier>linux-x64</LinuxRuntimeIdentifier>
+        <WindowsRuntimeIdentifier>win-x64</WindowsRuntimeIdentifier>
+        <Version>$(Version)</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../Shuttle.Pigeon.Server/Shuttle.Pigeon.Server.csproj" />
+        <ProjectReference Include="../Shuttle.Pigeon.WebApi/Shuttle.Pigeon.WebApi.csproj" />
+        <DockerFile Include="dockerfile-server">
+            <Name>shuttle/pigeon-server</Name>
+        </DockerFile>
+        <DockerFile Include="dockerfile-webapi">
+            <Name>shuttle/pigeon-webapi</Name>
+        </DockerFile>
+        <DockerFile Include="dockerfile-linux-sqlserver-demo">
+            <Name>shuttle/pigeon-sqlserver-linux</Name>
+        </DockerFile>
+    </ItemGroup>
+
+    <Target Name="EfBundle">
+        <Exec
+            Command="dotnet ef migrations bundle -p ../Shuttle.Pigeon.Data/Shuttle.Pigeon.Data.csproj -r $(LinuxRuntimeIdentifier) --self-contained --output $(MSBuildProjectDirectory)/deployment/shuttle-pigeon-efbundle-linux-x64 --force -- -c Release -f net8.0" />
+        <Exec
+            Command="dotnet ef migrations bundle -p ../Shuttle.Pigeon.Data/Shuttle.Pigeon.Data.csproj -r $(WindowsRuntimeIdentifier) --self-contained --output $(MSBuildProjectDirectory)/deployment/shuttle-pigeon-efbundle-win-x64.exe --force -- -c Release -f net8.0" />
+    </Target>
+
+    <Target Name="Package" DependsOnTargets="EfBundle">
+        <Error Condition="'$(Version)' == ''" Text="Version property is required. Use /p:Version={version}" />
+
+        <Exec
+            Command="dotnet publish %(ProjectReference.Identity) -c Release -f net8.0 -r $(LinuxRuntimeIdentifier) --self-contained false --output $(MSBuildProjectDirectory)/deployment/%(ProjectReference.Filename)" />
+
+        <Copy SourceFiles="%(ProjectReference.ConfigFile)"
+              DestinationFiles="$(MSBuildProjectDirectory)/deployment/%(ProjectReference.Filename)/%(ProjectReference.ConfigFile)"
+              SkipUnchangedFiles="false" />
+
+        <ItemGroup>
+            <AppSettingsFiles Include="$(MSBuildProjectDirectory)/deployment/**/appsettings*.json" />
+        </ItemGroup>
+
+        <Delete Files="@(AppSettingsFiles)" />
+
+        <Exec
+            Command="docker build -t %(DockerFile.Name):latest -t %(DockerFile.Name):$(Version) -f %(DockerFile.Identity) ." />
+    </Target>
+</Project>

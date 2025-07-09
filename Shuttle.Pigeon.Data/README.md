@@ -25,3 +25,4 @@ Run the following in the root of the project to deploy the database using a `com
 ```cmd
 dotnet ef database update --connection "Server=<server>;Database=<database>;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;Authentication=<ActiveDirectoryDefault|ActiveDirectoryInteractive>;"
 ```
+

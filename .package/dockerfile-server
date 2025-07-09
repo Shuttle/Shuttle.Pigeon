@@ -1,0 +1,7 @@
+﻿FROM mcr.microsoft.com/dotnet/runtime:8.0
+
+COPY ./deployment/Shuttle.Pigeon.Server/. /opt/shuttle.pigeon.server/.
+
+WORKDIR /opt/shuttle.pigeon.server/
+
+ENTRYPOINT ["/opt/shuttle.pigeon.server/Shuttle.Pigeon.Server" ]

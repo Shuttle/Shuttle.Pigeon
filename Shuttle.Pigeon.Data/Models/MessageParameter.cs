@@ -10,6 +10,6 @@ public class MessageParameter
     [Required]
     [StringLength(130)]
     public string Name { get; set; } = string.Empty;
-
+    [StringLength(300)]
     public string Value { get; set; } = string.Empty;
 }

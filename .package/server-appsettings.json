@@ -1,0 +1,54 @@
+{
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.File"
+    ],
+    "MinimumLevel": {
+      "Default": "Debug",
+      "Override": {
+        "System.Net.Http": "Error"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "./logs/.log",
+          "rollOnFileSizeLimit": true,
+          "retainedFileCountLimit": 30,
+          "fileSizeLimitBytes": 1048576,
+          "rollingInterval": "Day"
+        }
+      }
+    ]
+  },
+  "ConnectionStrings": {
+    "Access": "Data Source=database;Initial Catalog=Pigeon;user id=sa;password=Pass!000;TrustServerCertificate=true",
+    "azure": "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://azurite"
+  },
+  "Shuttle": {
+    "ServiceBus": {
+      "Inbox": {
+        "WorkQueueUri": "azuresq://azure/access-server-inbox-work",
+        "DeferredQueueUri": "azuresq://azure/access-server-inbox-deferred",
+        "ErrorQueueUri": "azuresq://azure/access-error",
+        "MaximumFailureCount": 8,
+        "ThreadCount": 1,
+        "DurationToIgnoreOnFailure": [
+          "00:00:01",
+          "00:00:01",
+          "00:00:01",
+          "00:00:01",
+          "00:00:01",
+          "00:00:05",
+          "00:00:10",
+          "00:00:30"
+        ]
+      }
+    }
+  }
+}

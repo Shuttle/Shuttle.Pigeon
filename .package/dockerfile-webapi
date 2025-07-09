@@ -1,0 +1,7 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+COPY ./deployment/Shuttle.Pigeon.WebApi/. /opt/shuttle.pigeon.webapi/.
+
+WORKDIR /opt/shuttle.pigeon.webapi/
+
+ENTRYPOINT ["dotnet", "Shuttle.Pigeon.WebApi.dll"]
