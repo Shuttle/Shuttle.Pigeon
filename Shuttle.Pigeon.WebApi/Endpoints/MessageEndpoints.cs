@@ -36,6 +36,7 @@ public static class MessageEndpoints
 
                 await dbContext.SaveChangesAsync();
             })
+            .WithTags("Messages")
             .RequirePermission(Permissions.Messages.Register)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(apiVersion1);
@@ -70,6 +71,7 @@ public static class MessageEndpoints
 
                 return Results.Ok();
             })
+            .WithTags("Messages")
             .RequirePermission(Permissions.Messages.Register)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(apiVersion1);
@@ -102,6 +104,7 @@ public static class MessageEndpoints
 
                 return Results.Accepted();
             })
+            .WithTags("Messages")
             .RequirePermission(Permissions.Messages.Register)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(apiVersion1);
@@ -112,6 +115,7 @@ public static class MessageEndpoints
 
                 return Results.Accepted();
             })
+            .WithTags("Messages")
             .RequirePermission(Permissions.Messages.Register)
             .WithApiVersionSet(versionSet)
             .MapToApiVersion(apiVersion1);

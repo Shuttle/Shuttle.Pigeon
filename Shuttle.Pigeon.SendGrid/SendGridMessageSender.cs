@@ -16,6 +16,7 @@ public class SendGridMessageSender : IMessageSender
     }
 
     public string Channel => "email";
+    public string Name => "sendgrid";
 
     public async Task SendAsync(Message message)
     {

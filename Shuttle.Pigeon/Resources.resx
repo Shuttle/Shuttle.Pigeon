@@ -121,8 +121,8 @@
     <value>Duplicate channel '{0}' found in message senders.</value>
     <comment>0 = channel</comment>
   </data>
-  <data name="MissingChannelException" xml:space="preserve">
-    <value>No message sender found for channel '{0}'.</value>
-    <comment>0 = channel</comment>
+  <data name="MissingMessageSenderException" xml:space="preserve">
+    <value>No message sender found for channel '{0}' and name '{1}'.</value>
+    <comment>0 = channel, 1 = message sender name</comment>
   </data>
 </root>

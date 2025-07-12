@@ -15,6 +15,7 @@ public class SmtpMessageSender : IMessageSender
     }
 
     public string Channel => "email";
+    public string Name => "smtp";
 
     public async Task SendAsync(Message message)
     {

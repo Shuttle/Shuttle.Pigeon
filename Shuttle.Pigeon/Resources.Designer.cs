@@ -70,11 +70,11 @@ namespace Shuttle.Pigeon {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No message sender found for channel &apos;{0}&apos;..
+        ///   Looks up a localized string similar to No message sender found for channel &apos;{0}&apos; and name &apos;{1}&apos;..
         /// </summary>
-        internal static string MissingChannelException {
+        internal static string MissingMessageSenderException {
             get {
-                return ResourceManager.GetString("MissingChannelException", resourceCulture);
+                return ResourceManager.GetString("MissingMessageSenderException", resourceCulture);
             }
         }
     }

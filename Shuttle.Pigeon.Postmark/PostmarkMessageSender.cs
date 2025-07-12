@@ -14,6 +14,7 @@ public class PostmarkMessageSender : IMessageSender
     }
 
     public string Channel => "email";
+    public string Name => "postmark";
 
     public async Task SendAsync(Message message)
     {

@@ -10,6 +10,7 @@ using Shuttle.Esb;
 using Shuttle.Esb.AzureStorageQueues;
 using Shuttle.Pigeon.Data;
 using Shuttle.Pigeon.Postmark;
+using Shuttle.Pigeon.SendGrid;
 using Shuttle.Pigeon.Smtp;
 
 namespace Shuttle.Pigeon.Server;
@@ -69,10 +70,13 @@ internal class Program
 
                         builder.AddOptions("azure", queueOptions);
                     })
-                    .AddPigeon(pigeonBuilder =>
+                    .AddPigeon(builder =>
                     {
-                        pigeonBuilder.TryAddPostmark(configuration);
-                        pigeonBuilder.TryAddSmtp(configuration);
+                        configuration.GetSection(PigeonOptions.SectionName).Bind(builder.Options);
+
+                        builder.TryAddPostmark(configuration);
+                        builder.TryAddSendGrid(configuration);
+                        builder.TryAddSmtp(configuration);
                     })
                     .AddPigeonDataAccess();
             })

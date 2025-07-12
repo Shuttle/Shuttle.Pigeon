@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Shuttle.Pigeon;
 
@@ -14,6 +16,13 @@ public static class ServiceCollectionExtensions
         var messageBuilder = new PigeonBuilder(services);
 
         builder?.Invoke(messageBuilder);
+
+        services.TryAddSingleton<IValidateOptions<PigeonOptions>, PigeonOptionsValidator>();
+
+        services.AddOptions<PigeonOptions>().Configure(options =>
+        {
+            options.ChannelDefaultMessageSenders = messageBuilder.Options.ChannelDefaultMessageSenders;
+        });
 
         services.AddSingleton<IMessageService, MessageService>();
 

@@ -3,6 +3,7 @@
 public interface IMessageSender
 {
     string Channel { get; }
+    string Name { get; }
 
     Task SendAsync(Message message);
 }

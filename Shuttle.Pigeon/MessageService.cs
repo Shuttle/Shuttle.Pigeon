@@ -1,38 +1,45 @@
-﻿namespace Shuttle.Pigeon;
+﻿using Microsoft.Extensions.Options;
+using Shuttle.Core.Contract;
+
+namespace Shuttle.Pigeon;
 
 public class MessageService : IMessageService
 {
-    private readonly Dictionary<string, IMessageSender> _messageSenders;
+    private readonly List<IMessageSender> _messageSenders;
+    private readonly PigeonOptions _pigeonOptions;
 
-    public MessageService(IEnumerable<IMessageSender> messageSenders)
+    public MessageService(IOptions<PigeonOptions> pigeonOptions, IEnumerable<IMessageSender> messageSenders)
     {
-        (messageSenders ?? throw new ArgumentNullException(nameof(messageSenders)))
-            .GroupBy(item => item.Channel.ToUpperInvariant())
-            .Where(group => group.Count() > 1)
-            .Select(group => group.Key)
-            .ToList()
-            .ForEach(channel => throw new ArgumentException(string.Format(Resources.DuplicateChannelException, channel), nameof(messageSenders)));
-
-        _messageSenders = messageSenders.ToDictionary(item => item.Channel.ToUpperInvariant());
+        _pigeonOptions = Guard.AgainstNull(Guard.AgainstNull(pigeonOptions).Value);
+        _messageSenders = Guard.AgainstNull(messageSenders).ToList();
     }
 
     public async Task SendAsync(Message message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
-
-        await GetMessageSender(message.Channel).SendAsync(message);
+        await GetMessageSender(Guard.AgainstEmpty(Guard.AgainstNull(message).Channel), message.MessageSenderName).SendAsync(message);
     }
 
-    private IMessageSender GetMessageSender(string channel)
+    private IMessageSender GetMessageSender(string channel, string messageSenderName)
     {
-        if (!_messageSenders.TryGetValue(channel.ToUpperInvariant(), out var sender))
+        var name = string.IsNullOrWhiteSpace(messageSenderName)
+            ? _pigeonOptions.ChannelDefaultMessageSenders.FirstOrDefault(item =>
+                item.Channel.Equals(channel, StringComparison.InvariantCultureIgnoreCase))?.Name
+            : messageSenderName;
+
+        var messageSender = _messageSenders
+            .FirstOrDefault(item =>
+                item.Channel.Equals(channel, StringComparison.InvariantCultureIgnoreCase) &&
+                (
+                    string.IsNullOrWhiteSpace(name) ||
+                    item.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)
+                )
+            );
+
+        if (messageSender == null)
         {
-            throw new ArgumentException(string.Format(Resources.MissingChannelException, channel), nameof(channel));
+            throw new ApplicationException(string.Format(Resources.MissingMessageSenderException, channel, string.IsNullOrWhiteSpace(messageSenderName) ? "(first)" : messageSenderName));
         }
 
-        return sender;
+        return messageSender;
     }
 }

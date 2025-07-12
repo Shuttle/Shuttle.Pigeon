@@ -17,6 +17,7 @@ public class Message
     }
 
     public string Channel { get; }
+    public string MessageSenderName { get; private set; }
 
     public string Content { get; private set; }
     public string ContentType { get; private set; }
@@ -84,12 +85,17 @@ public class Message
 
         return this;
     }
-
-
+    
     public Message WithSubject(string subject)
     {
         Subject = Guard.AgainstEmpty(subject);
 
+        return this;
+    }
+
+    public Message WithMessageSenderName(string messageSenderName)
+    {
+        MessageSenderName = messageSenderName;
         return this;
     }
 
