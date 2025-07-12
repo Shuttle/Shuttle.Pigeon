@@ -17,7 +17,7 @@ public class Message
     }
 
     public string Channel { get; }
-    public string MessageSenderName { get; private set; }
+    public string MessageSenderName { get; private set; } = string.Empty;
 
     public string Content { get; private set; }
     public string ContentType { get; private set; }
