@@ -34,7 +34,7 @@
     "ServiceBus": {
       "MessageRoutes": [
         {
-          "Uri": "azuresq://azure/pigeon-server-inbox-work",
+          "Uri": "azuresq://azure/pigeon-server-work",
           "Specifications": [
             {
               "Name": "StartsWith",
