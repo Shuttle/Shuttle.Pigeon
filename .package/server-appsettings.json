@@ -35,7 +35,7 @@
       "Inbox": {
         "WorkQueueUri": "azuresq://azure/pigeon-server-work",
         "DeferredQueueUri": "azuresq://azure/pigeon-server-deferred",
-        "ErrorQueueUri": "azuresq://azure/access-error",
+        "ErrorQueueUri": "azuresq://azure/pigeon-server-error",
         "MaximumFailureCount": 8,
         "ThreadCount": 1,
         "DurationToIgnoreOnFailure": [
