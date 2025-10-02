@@ -22,7 +22,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
     <PackageReference Include="Shuttle.Core.Contract" Version="20.0.1" />
-    <PackageReference Include="Shuttle.Extensions.EFCore" Version="20.0.1" />
+    <PackageReference Include="Shuttle.Extensions.EFCore" Version="20.0.2" />
   </ItemGroup>
 
   <ItemGroup>

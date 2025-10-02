@@ -19,7 +19,7 @@
     <PackageReference Include="Shuttle.Core.Data" Version="20.0.0" />
     <PackageReference Include="Shuttle.Esb.AzureStorageQueues" Version="20.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Shuttle.Access.RestClient" Version="8.0.2" />
+    <PackageReference Include="Shuttle.Access.RestClient" Version="8.1.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -5,19 +5,14 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.Smtp;
 
-public class SmtpMessageSender : IMessageSender
+public class SmtpMessageSender(IOptions<SmtpOptions> smtpOptions) : IMessageSender
 {
-    private readonly SmtpOptions _smtpOptions;
-
-    public SmtpMessageSender(IOptions<SmtpOptions> smtpOptions)
-    {
-        _smtpOptions = Guard.AgainstNull(Guard.AgainstNull(smtpOptions).Value);
-    }
+    private readonly SmtpOptions _smtpOptions = Guard.AgainstNull(Guard.AgainstNull(smtpOptions).Value);
 
     public string Channel => "email";
     public string Name => "smtp";
 
-    public async Task SendAsync(Message message)
+    public async Task SendAsync(Message message, CancellationToken cancellationToken = default)
     {
         Guard.AgainstNull(message);
 

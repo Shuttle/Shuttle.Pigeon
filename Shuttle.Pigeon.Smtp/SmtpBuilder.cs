@@ -3,7 +3,7 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.Smtp;
 
-public class SmtpBuilder
+public class SmtpBuilder(IServiceCollection services)
 {
     private SmtpOptions _smtpOptions = new();
 
@@ -13,9 +13,5 @@ public class SmtpBuilder
         set => _smtpOptions = Guard.AgainstNull(value);
     }
 
-    public IServiceCollection Services { get; }
-
-    public SmtpBuilder(IServiceCollection services)
-    {
-        Services = Guard.AgainstNull(services);
-    }}
+    public IServiceCollection Services { get; } = Guard.AgainstNull(services);
+}

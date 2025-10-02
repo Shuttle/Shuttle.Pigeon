@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Shuttle.Pigeon.MailKit\Shuttle.Pigeon.MailKit.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon.Postmark\Shuttle.Pigeon.Postmark.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon.SendGrid\Shuttle.Pigeon.SendGrid.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon.Smtp\Shuttle.Pigeon.Smtp.csproj" />

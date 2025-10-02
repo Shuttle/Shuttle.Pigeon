@@ -5,5 +5,5 @@ public interface IMessageSender
     string Channel { get; }
     string Name { get; }
 
-    Task SendAsync(Message message);
+    Task SendAsync(Message message, CancellationToken cancellationToken = default);
 }

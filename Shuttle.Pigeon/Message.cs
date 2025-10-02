@@ -2,29 +2,21 @@
 
 namespace Shuttle.Pigeon;
 
-public class Message
+public class Message(Guid id, string channel, string content, string contentType = "text/plain")
 {
     private readonly List<Attachment> _attachments = [];
     private readonly List<Parameter> _parameters = [];
     private readonly List<Recipient> _recipients = [];
 
-    public Message(Guid id, string channel, string content, string contentType = "text/plain")
-    {
-        Id = id;
-        Channel = Guard.AgainstEmpty(channel);
-        Content = Guard.AgainstEmpty(content);
-        ContentType = Guard.AgainstEmpty(contentType);
-    }
-
-    public string Channel { get; }
+    public string Channel { get; } = Guard.AgainstEmpty(channel);
     public string MessageSenderName { get; private set; } = string.Empty;
 
-    public string Content { get; private set; }
-    public string ContentType { get; private set; }
+    public string Content { get; private set; } = Guard.AgainstEmpty(content);
+    public string ContentType { get; private set; } = Guard.AgainstEmpty(contentType);
 
     public bool HasSender => !string.IsNullOrWhiteSpace(Sender);
 
-    public Guid Id { get; }
+    public Guid Id { get; } = id;
 
     public IReadOnlyCollection<Recipient> Recipients => _recipients.AsReadOnly();
     public string Sender { get; private set; } = string.Empty;
@@ -106,31 +98,18 @@ public class Message
         return _parameters.SingleOrDefault(item => item.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    public class Attachment
+    public class Attachment(string name, string contentType, byte[] content)
     {
-        public Attachment(string name, string contentType, byte[] content)
-        {
-            Name = Guard.AgainstEmpty(name);
-            ContentType = Guard.AgainstEmpty(contentType);
-            Content = (byte[])Guard.AgainstEmpty(content);
-        }
+        public byte[] Content { get; } = (byte[])Guard.AgainstEmpty(content);
+        public string ContentType { get; } = Guard.AgainstEmpty(contentType);
 
-        public byte[] Content { get; }
-        public string ContentType { get; }
-
-        public string Name { get; }
+        public string Name { get; } = Guard.AgainstEmpty(name);
     }
 
-    public class Parameter
+    public class Parameter(string name, string value)
     {
-        public Parameter(string name, string value)
-        {
-            Name = Guard.AgainstEmpty(name);
-            Value = Guard.AgainstEmpty(value);
-        }
-
-        public string Name { get; }
-        public string Value { get; }
+        public string Name { get; } = Guard.AgainstEmpty(name);
+        public string Value { get; } = Guard.AgainstEmpty(value);
 
         public T? GetValue<T>()
         {
@@ -149,15 +128,17 @@ public class Message
         }
     }
 
-    public class Recipient
+    public class Recipient(string identifier, RecipientType type)
     {
-        public Recipient(string identifier, RecipientType type)
-        {
-            Identifier = !string.IsNullOrWhiteSpace(identifier) ? identifier : throw new ArgumentNullException(nameof(identifier));
-            Type = type;
-        }
+        public string Identifier { get; } = Guard.AgainstEmpty(identifier);
+        public RecipientType Type { get; private set; } = type;
+        public string DisplayName { get; private set; } = string.Empty;
+        public bool HasDisplayName => !string.IsNullOrEmpty(DisplayName);
 
-        public string Identifier { get; }
-        public RecipientType Type { get; private set; }
+        public Recipient WithDisplayName(string displayName)
+        {
+            DisplayName = Guard.AgainstEmpty(displayName);
+            return this;
+        }
     }
 }

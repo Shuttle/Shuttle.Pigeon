@@ -4,19 +4,14 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.Postmark;
 
-public class PostmarkMessageSender : IMessageSender
+public class PostmarkMessageSender(IOptions<PostmarkOptions> postmarkOptions) : IMessageSender
 {
-    private readonly PostmarkClient _client;
-
-    public PostmarkMessageSender(IOptions<PostmarkOptions> postmarkOptions)
-    {
-        _client = new(Guard.AgainstNull(Guard.AgainstNull(postmarkOptions).Value).ServerToken);
-    }
+    private readonly PostmarkClient _client = new(Guard.AgainstNull(Guard.AgainstNull(postmarkOptions).Value).ServerToken);
 
     public string Channel => "email";
     public string Name => "postmark";
 
-    public async Task SendAsync(Message message)
+    public async Task SendAsync(Message message, CancellationToken cancellationToken = default)
     {
         Guard.AgainstNull(message);
 
