@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.Messages", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.Server", "Shuttle.Pigeon.Server\Shuttle.Pigeon.Server.csproj", "{33E20A76-5BD5-4316-9375-8E0EE10BF858}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.Smtp", "Shuttle.Pigeon.Smtp\Shuttle.Pigeon.Smtp.csproj", "{5069CA25-D1D2-4149-A658-40D4FCA6CD91}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.Postmark", "Shuttle.Pigeon.Postmark\Shuttle.Pigeon.Postmark.csproj", "{0A6A2586-A2AC-4AD5-A18C-B6B1708027AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shuttle.Pigeon.WebApi", "Shuttle.Pigeon.WebApi\Shuttle.Pigeon.WebApi.csproj", "{668D5936-0568-4A4E-8497-C4F6D7F42214}"
@@ -64,10 +62,6 @@ Global
 		{33E20A76-5BD5-4316-9375-8E0EE10BF858}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33E20A76-5BD5-4316-9375-8E0EE10BF858}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33E20A76-5BD5-4316-9375-8E0EE10BF858}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5069CA25-D1D2-4149-A658-40D4FCA6CD91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5069CA25-D1D2-4149-A658-40D4FCA6CD91}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5069CA25-D1D2-4149-A658-40D4FCA6CD91}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5069CA25-D1D2-4149-A658-40D4FCA6CD91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0A6A2586-A2AC-4AD5-A18C-B6B1708027AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A6A2586-A2AC-4AD5-A18C-B6B1708027AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A6A2586-A2AC-4AD5-A18C-B6B1708027AB}.Release|Any CPU.ActiveCfg = Release|Any CPU

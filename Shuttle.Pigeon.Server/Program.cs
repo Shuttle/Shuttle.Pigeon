@@ -1,17 +1,15 @@
-﻿using Castle.Core.Configuration;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Shuttle.Core.Contract;
 using Shuttle.Core.TransactionScope;
 using Shuttle.Esb;
 using Shuttle.Esb.AzureStorageQueues;
 using Shuttle.Pigeon.Data;
+using Shuttle.Pigeon.MailKit;
 using Shuttle.Pigeon.Postmark;
 using Shuttle.Pigeon.SendGrid;
-using Shuttle.Pigeon.Smtp;
 
 namespace Shuttle.Pigeon.Server;
 
@@ -74,9 +72,9 @@ internal class Program
                     {
                         configuration.GetSection(PigeonOptions.SectionName).Bind(builder.Options);
 
+                        builder.TryAddMailKit(configuration);
                         builder.TryAddPostmark(configuration);
                         builder.TryAddSendGrid(configuration);
-                        builder.TryAddSmtp(configuration);
                     })
                     .AddPigeonDataAccess();
             })
