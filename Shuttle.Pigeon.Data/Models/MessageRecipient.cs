@@ -12,6 +12,5 @@ public class MessageRecipient
 
     public Message Message { get; set; } = null!;
     public Guid MessageId { get; set; }
-
     public int Type { get; set; }
 }

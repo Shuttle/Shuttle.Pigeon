@@ -36,7 +36,11 @@ public static class ServiceCollectionExtensions
                 throw new ArgumentException($"Could not find a connection string named '{pigeonDataBuilder.Options.ConnectionStringName}'.");
             }
 
-            dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptions => { sqlServerOptions.CommandTimeout(pigeonDataBuilder.Options.CommandTimeout); });
+            dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptions =>
+            {
+                sqlServerOptions.MigrationsHistoryTable("__EFMigrationsHistory", "pigeon");
+                sqlServerOptions.CommandTimeout(pigeonDataBuilder.Options.CommandTimeout);
+            });
         });
 
         return services;

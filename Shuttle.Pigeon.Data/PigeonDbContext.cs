@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Options;
 
 namespace Shuttle.Pigeon.Data;
@@ -12,8 +13,7 @@ public class PigeonDbContext : DbContext
     public DbSet<Models.Message> Messages { get; set; } = null!;
     public DbSet<Models.MessageAttachment> MessageAttachments { get; set; } = null!;
     public DbSet<Models.MessageRecipient> MessageRecipients { get; set; } = null!;
-
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("pigeon");
@@ -29,4 +29,10 @@ public class PigeonDbContext : DbContext
             .WithMany(b => b.Recipients)
             .HasForeignKey(p => p.MessageId) 
             .OnDelete(DeleteBehavior.Cascade);
-    }}
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Conventions.Remove(typeof(TableNameFromDbSetConvention));
+    }
+}

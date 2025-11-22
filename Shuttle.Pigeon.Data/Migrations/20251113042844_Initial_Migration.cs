@@ -15,12 +15,13 @@ namespace Shuttle.Pigeon.Data.Migrations
                 name: "pigeon");
 
             migrationBuilder.CreateTable(
-                name: "Messages",
+                name: "Message",
                 schema: "pigeon",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Channel = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    ChannelMessageSenderName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Sender = table.Column<string>(type: "nvarchar(130)", maxLength: 130, nullable: false),
                     SenderDisplayName = table.Column<string>(type: "nvarchar(130)", maxLength: 130, nullable: true),
                     Subject = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
@@ -32,11 +33,11 @@ namespace Shuttle.Pigeon.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.PrimaryKey("PK_Message", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MessageAttachments",
+                name: "MessageAttachment",
                 schema: "pigeon",
                 columns: table => new
                 {
@@ -47,18 +48,18 @@ namespace Shuttle.Pigeon.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MessageAttachments", x => new { x.MessageId, x.Name });
+                    table.PrimaryKey("PK_MessageAttachment", x => new { x.MessageId, x.Name });
                     table.ForeignKey(
-                        name: "FK_MessageAttachments_Messages_MessageId",
+                        name: "FK_MessageAttachment_Message_MessageId",
                         column: x => x.MessageId,
                         principalSchema: "pigeon",
-                        principalTable: "Messages",
+                        principalTable: "Message",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "MessageRecipients",
+                name: "MessageRecipient",
                 schema: "pigeon",
                 columns: table => new
                 {
@@ -68,12 +69,12 @@ namespace Shuttle.Pigeon.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MessageRecipients", x => new { x.MessageId, x.Identifier });
+                    table.PrimaryKey("PK_MessageRecipient", x => new { x.MessageId, x.Identifier });
                     table.ForeignKey(
-                        name: "FK_MessageRecipients_Messages_MessageId",
+                        name: "FK_MessageRecipient_Message_MessageId",
                         column: x => x.MessageId,
                         principalSchema: "pigeon",
-                        principalTable: "Messages",
+                        principalTable: "Message",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -83,15 +84,15 @@ namespace Shuttle.Pigeon.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MessageAttachments",
+                name: "MessageAttachment",
                 schema: "pigeon");
 
             migrationBuilder.DropTable(
-                name: "MessageRecipients",
+                name: "MessageRecipient",
                 schema: "pigeon");
 
             migrationBuilder.DropTable(
-                name: "Messages",
+                name: "Message",
                 schema: "pigeon");
         }
     }

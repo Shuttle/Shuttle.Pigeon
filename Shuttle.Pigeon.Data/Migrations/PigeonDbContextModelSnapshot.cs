@@ -34,6 +34,11 @@ namespace Shuttle.Pigeon.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("ChannelMessageSenderName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(2147483647)
@@ -69,7 +74,7 @@ namespace Shuttle.Pigeon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Messages", "pigeon");
+                    b.ToTable("Message", "pigeon");
                 });
 
             modelBuilder.Entity("Shuttle.Pigeon.Data.Models.MessageAttachment", b =>
@@ -92,7 +97,7 @@ namespace Shuttle.Pigeon.Data.Migrations
 
                     b.HasKey("MessageId", "Name");
 
-                    b.ToTable("MessageAttachments", "pigeon");
+                    b.ToTable("MessageAttachment", "pigeon");
                 });
 
             modelBuilder.Entity("Shuttle.Pigeon.Data.Models.MessageRecipient", b =>
@@ -109,7 +114,7 @@ namespace Shuttle.Pigeon.Data.Migrations
 
                     b.HasKey("MessageId", "Identifier");
 
-                    b.ToTable("MessageRecipients", "pigeon");
+                    b.ToTable("MessageRecipient", "pigeon");
                 });
 
             modelBuilder.Entity("Shuttle.Pigeon.Data.Models.MessageAttachment", b =>

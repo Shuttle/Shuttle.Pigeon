@@ -34,7 +34,10 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<PigeonDbCo
         var optionsBuilder = new DbContextOptionsBuilder<PigeonDbContext>();
 
         optionsBuilder
-            .UseSqlServer(configuration.GetConnectionString("Pigeon"));
+            .UseSqlServer(configuration.GetConnectionString("Pigeon"), sqlServerOptions =>
+            {
+                sqlServerOptions.MigrationsHistoryTable("__EFMigrationsHistory", "pigeon");
+            });
 
         optionsBuilder.ReplaceService<IMigrationsAssembly, SchemaMigrationsAssembly>();
 

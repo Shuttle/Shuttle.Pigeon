@@ -15,9 +15,9 @@ public class Message
     [StringLength(30)]
     public string ChannelMessageSenderName { get; set; } = string.Empty;
     [Required]
-    [StringLength(130)]
+    [StringLength(250)]
     public string Sender { get; set; } = string.Empty;
-    [StringLength(130)]
+    [StringLength(250)]
     public string? SenderDisplayName { get; set; }
     [Required]
     [StringLength(250)]
