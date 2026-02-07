@@ -4,14 +4,9 @@ using Shuttle.Pigeon.Messages.v1;
 
 namespace Shuttle.Pigeon.Server;
 
-public class SendMessageHandler : IMessageHandler<SendMessage>
+public class SendMessageHandler(IMessageService messageService) : IMessageHandler<SendMessage>
 {
-    private readonly IMessageService _messageService;
-
-    public SendMessageHandler(IMessageService messageService)
-    {
-        _messageService = Guard.AgainstNull(messageService);
-    }
+    private readonly IMessageService _messageService = Guard.AgainstNull(messageService);
 
     public async Task ProcessMessageAsync(IHandlerContext<SendMessage> context)
     {

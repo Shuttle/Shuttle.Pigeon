@@ -7,14 +7,9 @@ using Shuttle.Pigeon.Messages.v1;
 
 namespace Shuttle.Pigeon.Server;
 
-public class RemoveRegisteredMessageHandler : IMessageHandler<RemoveRegisteredMessage>
+public class RemoveRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbContextFactory) : IMessageHandler<RemoveRegisteredMessage>
 {
-    private readonly IDbContextFactory<PigeonDbContext> _dbContextFactory;
-
-    public RemoveRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbContextFactory)
-    {
-        _dbContextFactory = Guard.AgainstNull(dbContextFactory);
-    }
+    private readonly IDbContextFactory<PigeonDbContext> _dbContextFactory = Guard.AgainstNull(dbContextFactory);
 
     public async Task ProcessMessageAsync(IHandlerContext<RemoveRegisteredMessage> context)
     {

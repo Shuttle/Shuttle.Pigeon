@@ -7,16 +7,11 @@ using Shuttle.Pigeon.Messages.v1;
 
 namespace Shuttle.Pigeon.Server;
 
-public class SendRegisteredMessageHandler : IMessageHandler<SendRegisteredMessage>
+public class SendRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbContextFactory, IMessageService messageService)
+    : IMessageHandler<SendRegisteredMessage>
 {
-    private readonly IDbContextFactory<PigeonDbContext> _dbContextFactory;
-    private readonly IMessageService _messageService;
-
-    public SendRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbContextFactory, IMessageService messageService)
-    {
-        _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
-        _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
-    }
+    private readonly IDbContextFactory<PigeonDbContext> _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
+    private readonly IMessageService _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
 
     public async Task ProcessMessageAsync(IHandlerContext<SendRegisteredMessage> context)
     {

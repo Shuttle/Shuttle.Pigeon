@@ -3,16 +3,11 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon;
 
-public class MessageService : IMessageService
+public class MessageService(IOptions<PigeonOptions> pigeonOptions, IEnumerable<IMessageSender> messageSenders)
+    : IMessageService
 {
-    private readonly List<IMessageSender> _messageSenders;
-    private readonly PigeonOptions _pigeonOptions;
-
-    public MessageService(IOptions<PigeonOptions> pigeonOptions, IEnumerable<IMessageSender> messageSenders)
-    {
-        _pigeonOptions = Guard.AgainstNull(Guard.AgainstNull(pigeonOptions).Value);
-        _messageSenders = Guard.AgainstNull(messageSenders).ToList();
-    }
+    private readonly List<IMessageSender> _messageSenders = Guard.AgainstNull(messageSenders).ToList();
+    private readonly PigeonOptions _pigeonOptions = Guard.AgainstNull(Guard.AgainstNull(pigeonOptions).Value);
 
     public async Task SendAsync(Message message)
     {
@@ -37,7 +32,7 @@ public class MessageService : IMessageService
 
         if (messageSender == null)
         {
-            throw new ApplicationException(string.Format(Resources.MissingMessageSenderException, channel, string.IsNullOrWhiteSpace(messageSenderName) ? "(first)" : messageSenderName));
+            throw new ApplicationException(string.Format(Resources.MissingMessageSenderException, channel, $"{name}{(string.IsNullOrWhiteSpace(messageSenderName) ? " (first)" : string.Empty)}"));
         }
 
         return messageSender;
