@@ -1,5 +1,5 @@
 ﻿using Shuttle.Core.Contract;
-using Shuttle.Esb;
+using Shuttle.Hopper;
 using Shuttle.Pigeon.Messages.v1;
 
 namespace Shuttle.Pigeon.Server;
@@ -8,10 +8,8 @@ public class SendMessageHandler(IMessageService messageService) : IMessageHandle
 {
     private readonly IMessageService _messageService = Guard.AgainstNull(messageService);
 
-    public async Task ProcessMessageAsync(IHandlerContext<SendMessage> context)
+    public async Task HandleAsync(SendMessage message, CancellationToken cancellationToken = new CancellationToken())
     {
-        var message = Guard.AgainstNull(context).Message;
-
         var pigeonMessage = new Message(message.Id, message.Channel, message.Content, message.ContentType)
             .AddRecipients(message.Recipients.Select(item => new Message.Recipient(item.Identifier, (RecipientType)item.Type)))
             .WithSubject(message.Subject);

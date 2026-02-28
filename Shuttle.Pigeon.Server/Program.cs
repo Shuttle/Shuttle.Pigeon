@@ -3,19 +3,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Shuttle.Core.Pipelines;
+using Shuttle.Core.Reflection;
 using Shuttle.Core.TransactionScope;
-using Shuttle.Esb;
-using Shuttle.Esb.AzureStorageQueues;
-using Shuttle.Pigeon.Data;
+using Shuttle.Hopper;
+using Shuttle.Hopper.AzureStorageQueues;
 using Shuttle.Pigeon.MailKit;
 using Shuttle.Pigeon.Postmark;
 using Shuttle.Pigeon.SendGrid;
+using Shuttle.Pigeon.SqlServer;
 
 namespace Shuttle.Pigeon.Server;
 
 internal class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -46,37 +48,64 @@ internal class Program
             .ConfigureServices(services =>
             {
                 services
-                    .AddTransactionScope(builder => builder.Options.Enabled = false)
+                    .AddTransactionScope(builder => builder.Configure(options =>
+                    {
+                        options.Enabled = false;
+                    }))
                     .AddSingleton(configuration)
                     .AddLogging(loggingBuilder =>
                     {
                         loggingBuilder.ClearProviders();
                         loggingBuilder.AddSerilog();
                     })
-                    .AddServiceBus(builder =>
+                    .AddPipelines(pipelineBuilder =>
                     {
-                        configuration.GetSection(ServiceBusOptions.SectionName).Bind(builder.Options);
-                    })
-                    .AddAzureStorageQueues(builder =>
-                    {
-                        var queueOptions = configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();
-
-                        if (string.IsNullOrWhiteSpace(queueOptions.StorageAccount))
+                        pipelineBuilder.Configure(options =>
                         {
-                            queueOptions.ConnectionString = configuration.GetConnectionString("azure") ?? string.Empty;
-                        }
+                            options.PipelineFailed += (eventArgs, _) =>
+                            {
+                                Log.Error(eventArgs.Pipeline.Exception?.AllMessages() ?? string.Empty);
+                                return Task.CompletedTask;
+                            };
 
-                        builder.AddOptions("azure", queueOptions);
+                            options.PipelineRecursiveException += (eventArgs, _) =>
+                            {
+                                Log.Error(eventArgs.Pipeline.Exception?.AllMessages() ?? string.Empty);
+                                return Task.CompletedTask;
+                            };
+                        });
                     })
-                    .AddPigeon(builder =>
+                    .AddHopper(hopperBuilder =>
                     {
-                        configuration.GetSection(PigeonOptions.SectionName).Bind(builder.Options);
+                        configuration.GetSection(HopperOptions.SectionName).Bind(hopperBuilder.Options);
 
-                        builder.TryAddMailKit(configuration);
-                        builder.TryAddPostmark(configuration);
-                        builder.TryAddSendGrid(configuration);
+                        hopperBuilder
+                            .UseAzureStorageQueues(builder =>
+                            {
+                                var queueOptions = configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();
+
+                                if (string.IsNullOrWhiteSpace(queueOptions.StorageAccount))
+                                {
+                                    queueOptions.ConnectionString = configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
+                                }
+
+                                builder.AddOptions("azure", queueOptions);
+                            });
                     })
-                    .AddPigeonDataAccess();
+                    .AddPigeon(pigeonBuilder =>
+                    {
+                        configuration.GetSection(PigeonOptions.SectionName).Bind(pigeonBuilder.Options);
+
+                        pigeonBuilder.TryAddMailKit(configuration);
+                        pigeonBuilder.TryAddPostmark(configuration);
+                        pigeonBuilder.TryAddSendGrid(configuration);
+
+                        pigeonBuilder
+                            .UseSqlServer(builder =>
+                            {
+                                builder.Options.ConnectionString = configuration.GetConnectionString("Pigeon") ?? "Missing connection string 'Pigeon'.";
+                            });
+                    });
             })
             .Build()
             .RunAsync();

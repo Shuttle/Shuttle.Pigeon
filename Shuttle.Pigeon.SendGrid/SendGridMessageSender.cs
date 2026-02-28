@@ -6,14 +6,9 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.SendGrid;
 
-public class SendGridMessageSender : IMessageSender
+public class SendGridMessageSender(IOptions<SendGridOptions> postmarkOptions) : IMessageSender
 {
-    private readonly SendGridClient _client;
-
-    public SendGridMessageSender(IOptions<SendGridOptions> postmarkOptions)
-    {
-        _client = new(Guard.AgainstNull(Guard.AgainstNull(postmarkOptions).Value).ApiKey);
-    }
+    private readonly SendGridClient _client = new(Guard.AgainstNull(Guard.AgainstNull(postmarkOptions).Value).ApiKey);
 
     public string Channel => "email";
     public string Name => "sendgrid";
@@ -74,11 +69,11 @@ public class SendGridMessageSender : IMessageSender
             });
         }
 
-        var response = await _client.SendEmailAsync(msg);
+        var response = await _client.SendEmailAsync(msg, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new($"Failed to send email: {await response.Body.ReadAsStringAsync()}");
+            throw new($"Failed to send email: {await response.Body.ReadAsStringAsync(cancellationToken)}");
         }
     }
 }

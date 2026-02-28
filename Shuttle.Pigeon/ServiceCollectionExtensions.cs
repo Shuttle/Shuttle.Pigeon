@@ -1,31 +1,30 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddPigeon(this IServiceCollection services, Action<PigeonBuilder>? builder = null)
+    extension(IServiceCollection services)
     {
-        if (services == null)
+        public IServiceCollection AddPigeon(Action<PigeonBuilder>? builder = null)
         {
-            throw new ArgumentNullException(nameof(services));
+            var messageBuilder = new PigeonBuilder(Guard.AgainstNull(services));
+
+            builder?.Invoke(messageBuilder);
+
+            services.TryAddSingleton<IValidateOptions<PigeonOptions>, PigeonOptionsValidator>();
+
+            services.AddOptions<PigeonOptions>().Configure(options =>
+            {
+                options.ChannelDefaultMessageSenders = messageBuilder.Options.ChannelDefaultMessageSenders;
+            });
+
+            services.AddSingleton<IMessageService, MessageService>();
+
+            return services;
         }
-
-        var messageBuilder = new PigeonBuilder(services);
-
-        builder?.Invoke(messageBuilder);
-
-        services.TryAddSingleton<IValidateOptions<PigeonOptions>, PigeonOptionsValidator>();
-
-        services.AddOptions<PigeonOptions>().Configure(options =>
-        {
-            options.ChannelDefaultMessageSenders = messageBuilder.Options.ChannelDefaultMessageSenders;
-        });
-
-        services.AddSingleton<IMessageService, MessageService>();
-
-        return services;
     }
 }

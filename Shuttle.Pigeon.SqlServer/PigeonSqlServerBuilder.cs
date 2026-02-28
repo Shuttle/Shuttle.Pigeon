@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shuttle.Core.Contract;
 
-namespace Shuttle.Pigeon.MailKit;
+namespace Shuttle.Pigeon.SqlServer;
 
-public class MailKitBuilder(IServiceCollection services)
+public class PigeonSqlServerBuilder(IServiceCollection services)
 {
-    public MailKitOptions Options
+    public PigeonSqlServerOptions Options
     {
         get;
         set => field = Guard.AgainstNull(value);

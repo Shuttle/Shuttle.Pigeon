@@ -1,23 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Shuttle.Core.Contract;
-using Shuttle.Esb;
-using Shuttle.Extensions.EFCore;
-using Shuttle.Pigeon.Data;
+﻿using Shuttle.Hopper;
 using Shuttle.Pigeon.Messages.v1;
+using Shuttle.Pigeon.SqlServer;
 
 namespace Shuttle.Pigeon.Server;
 
-public class RemoveRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbContextFactory) : IMessageHandler<RemoveRegisteredMessage>
+public class RemoveRegisteredMessageHandler(PigeonDbContext dbContext) : IMessageHandler<RemoveRegisteredMessage>
 {
-    private readonly IDbContextFactory<PigeonDbContext> _dbContextFactory = Guard.AgainstNull(dbContextFactory);
-
-    public async Task ProcessMessageAsync(IHandlerContext<RemoveRegisteredMessage> context)
+    public async Task HandleAsync(RemoveRegisteredMessage message, CancellationToken cancellationToken = default)
     {
-        var message = Guard.AgainstNull(context).Message;
-
-        using var scope = new DbContextScope();
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
         var model = dbContext.Messages.SingleOrDefault(item => item.Id == message.Id);
 
         if (model == null)
@@ -27,6 +17,6 @@ public class RemoveRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> d
 
         dbContext.Messages.Remove(model);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

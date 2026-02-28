@@ -1,11 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Shuttle.Extensions.EFCore;
 
-namespace Shuttle.Pigeon.Data;
+namespace Shuttle.Pigeon.SqlServer;
 
 public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<PigeonDbContext>
 {
@@ -39,8 +37,6 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<PigeonDbCo
                 sqlServerOptions.MigrationsHistoryTable("__EFMigrationsHistory", "pigeon");
             });
 
-        optionsBuilder.ReplaceService<IMigrationsAssembly, SchemaMigrationsAssembly>();
-
-        return new(Options.Create(new PigeonDataOptions()), optionsBuilder.Options);
+        return new(Options.Create(new PigeonSqlServerOptions()), optionsBuilder.Options);
     }
 }

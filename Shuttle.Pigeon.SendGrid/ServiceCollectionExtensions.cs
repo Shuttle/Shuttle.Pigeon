@@ -1,42 +1,41 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.SendGrid;
 
 public static class ServiceCollectionExtensions
 {
-    public static PigeonBuilder TryAddSendGrid(this PigeonBuilder pigeonBuilder, IConfiguration configuration)
+    extension(PigeonBuilder pigeonBuilder)
     {
-        var options = configuration.GetSection(SendGridOptions.SectionName).Get<SendGridOptions>();
-
-        if (options != null)
+        public PigeonBuilder AddSendGrid(Action<SendGridBuilder>? builder = null)
         {
-            pigeonBuilder.AddSendGrid(builder => { builder.Options = options; });
+            var postmarkBuilder = new SendGridBuilder(Guard.AgainstNull(pigeonBuilder).Services);
+
+            builder?.Invoke(postmarkBuilder);
+
+            pigeonBuilder.Services
+                .AddSingleton<IValidateOptions<SendGridOptions>, SendGridOptionsValidator>()
+                .AddSingleton<IMessageSender, SendGridMessageSender>()
+                .AddOptions<SendGridOptions>().Configure(options =>
+                {
+                    options.ApiKey = postmarkBuilder.Options.ApiKey;
+                });
+
+            return pigeonBuilder;
         }
 
-        return pigeonBuilder;
-    }
-
-    public static PigeonBuilder AddSendGrid(this PigeonBuilder pigeonBuilder, Action<SendGridBuilder>? builder = null)
-    {
-        if (pigeonBuilder == null)
+        public PigeonBuilder TryAddSendGrid(IConfiguration configuration)
         {
-            throw new ArgumentNullException(nameof(pigeonBuilder));
-        }
+            var options = configuration.GetSection(SendGridOptions.SectionName).Get<SendGridOptions>();
 
-        var postmarkBuilder = new SendGridBuilder(pigeonBuilder.Services);
-
-        builder?.Invoke(postmarkBuilder);
-
-        pigeonBuilder.Services
-            .AddSingleton<IValidateOptions<SendGridOptions>, SendGridOptionsValidator>()
-            .AddSingleton<IMessageSender, SendGridMessageSender>()
-            .AddOptions<SendGridOptions>().Configure(options =>
+            if (options != null)
             {
-                options.ApiKey = postmarkBuilder.Options.ApiKey;
-            });
+                Guard.AgainstNull(pigeonBuilder).AddSendGrid(builder => { builder.Options = options; });
+            }
 
-        return pigeonBuilder;
+            return pigeonBuilder;
+        }
     }
 }

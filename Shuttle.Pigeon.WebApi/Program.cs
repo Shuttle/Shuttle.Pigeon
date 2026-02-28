@@ -1,11 +1,12 @@
 using Asp.Versioning;
-using Microsoft.OpenApi.Models;
+using Azure.Identity;
+using Scalar.AspNetCore;
 using Serilog;
 using Shuttle.Access.AspNetCore;
 using Shuttle.Access.RestClient;
-using Shuttle.Esb;
-using Shuttle.Esb.AzureStorageQueues;
-using Shuttle.Pigeon.Data;
+using Shuttle.Hopper;
+using Shuttle.Hopper.AzureStorageQueues;
+using Shuttle.Pigeon.SqlServer;
 
 namespace Shuttle.Pigeon.WebApi;
 
@@ -42,57 +43,49 @@ public class Program
         webApplicationBuilder.Services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddEndpointsApiExplorer()
-            .AddSwaggerGen(options =>
-            {
-                options.SchemaGeneratorOptions.SchemaIdSelector = type => type.FullName;
-                options.AddSecurityDefinition("Bearer", new()
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer {jwt}\""
-                });
-                options.AddSecurityRequirement(new()
-                {
-                    {
-                        new()
-                        {
-                            Reference = new()
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        []
-                    }
-                });
-            })
             .AddLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddSerilog();
             })
-            .AddServiceBus(builder =>
+            .AddHopper(hopperBuilder =>
             {
-                webApplicationBuilder.Configuration.GetSection(ServiceBusOptions.SectionName).Bind(builder.Options);
-            })
-            .AddAzureStorageQueues(builder =>
-            {
-                var queueOptions = webApplicationBuilder.Configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();
+                webApplicationBuilder.Configuration.GetSection(HopperOptions.SectionName).Bind(hopperBuilder.Options);
 
-                if (string.IsNullOrWhiteSpace(queueOptions.StorageAccount))
+                hopperBuilder
+                    .UseAzureStorageQueues(builder =>
+                    {
+                        var queueOptions = webApplicationBuilder.Configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();
+
+                        if (string.IsNullOrWhiteSpace(queueOptions.StorageAccount))
+                        {
+                            queueOptions.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
+                        }
+
+                        builder.AddOptions("azure", queueOptions);
+                    });
+            })
+            .AddPigeon(pigeonBuilder =>
+            {
+                pigeonBuilder
+                    .UseSqlServer(builder =>
+                    {
+                        builder.Options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("Pigeon") ?? "Missing connection string 'Pigeon'.";
+                    });
+            })
+            .AddAccessClient(clientBuilder =>
+            {
+                webApplicationBuilder.Configuration.GetSection(AccessClientOptions.SectionName).Bind(clientBuilder.Options);
+
+                clientBuilder.UseBearerAuthenticationProvider(providerBuilder =>
                 {
-                    queueOptions.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("azure") ?? string.Empty;
-                }
+                    providerBuilder.Options.GetBearerAuthenticationContextAsync = async (_, _) =>
+                    {
+                        var token = (await new DefaultAzureCredential().GetTokenAsync(new(["https://management.azure.com/.default"]), CancellationToken.None)).Token;
 
-                builder.AddOptions("azure", queueOptions);
-            })
-            .AddPigeonDataAccess()
-            .AddAccessAuthorization(builder =>
-            {
-                webApplicationBuilder.Configuration.GetSection(AccessAuthorizationOptions.SectionName).Bind(builder.Options);
+                        return new(token);
+                    };
+                });
             })
             .AddAccessClient(builder =>
             {
@@ -108,8 +101,6 @@ public class Program
                         .AllowAnyHeader();
                 });
             });
-
-        webApplicationBuilder.Services.ConfigureSwaggerGen(options => options.CustomSchemaIds(type => (type.FullName ?? string.Empty).Replace("+", "_")));
 
         var apiVersion1 = new ApiVersion(1, 0);
 
@@ -135,9 +126,16 @@ public class Program
 
         app
             .UseCors()
-            .UseSwagger()
-            .UseSwaggerUI()
             .UseAccessAuthorization();
+
+        app.MapOpenApi();
+        app.MapScalarApiReference(options =>
+        {
+            options
+                .WithTitle("Shuttle Pigeon API")
+                .WithTheme(ScalarTheme.DeepSpace)
+                .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+        });
 
         app
             .MapServerEndpoints(versionSet)

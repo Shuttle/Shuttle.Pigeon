@@ -122,9 +122,9 @@
     <comment>0 = connection string name</comment>
   </data>
   <data name="ConnectionStringOptionException" xml:space="preserve">
-    <value>No 'PigeonDataOptions.ConnectionStringName' has been specified.</value>
+    <value>No 'PigeonSqlServerOptions.ConnectionStringName' has been specified.</value>
   </data>
   <data name="SchemaOptionException" xml:space="preserve">
-    <value>No 'PigeonDataOptions.Schema' has been specified.</value>
+    <value>No 'PigeonSqlServerOptions.Schema' has been specified.</value>
   </data>
 </root>

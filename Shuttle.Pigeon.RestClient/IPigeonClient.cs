@@ -4,6 +4,6 @@ namespace Shuttle.Pigeon.RestClient
 {
     public interface IPigeonClient
     {
-        IMessagesApi Messageses { get; }
+        IMessagesApi Messages { get; }
     }
 }

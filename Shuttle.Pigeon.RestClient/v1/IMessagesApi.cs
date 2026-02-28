@@ -6,11 +6,11 @@ namespace Shuttle.Pigeon.RestClient.v1;
 public interface IMessagesApi
 {
     [Post("/v1/messages/send")]
-    Task SendAsync(SendMessage model);
+    Task SendAsync(SendMessage model, CancellationToken cancellationToken = default);
     [Post("/v1/messages")]
-    Task RegisterAsync(SendMessage model);
+    Task RegisterAsync(SendMessage model, CancellationToken cancellationToken = default);
     [Post("/v1/message/{id}/attachment")]
-    Task AddAttachmentAsync(Guid id, Attachment model);
+    Task AddAttachmentAsync(Guid id, Attachment model, CancellationToken cancellationToken = default);
     [Post("/v1/message/{id}/send")]
-    Task SendAsync(Guid id);
+    Task SendAsync(Guid id, CancellationToken cancellationToken = default);
 }

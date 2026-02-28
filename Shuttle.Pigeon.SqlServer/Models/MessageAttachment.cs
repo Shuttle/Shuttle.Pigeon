@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Shuttle.Pigeon.Data.Models;
+namespace Shuttle.Pigeon.SqlServer.Models;
 
 [PrimaryKey(nameof(MessageId), nameof(Name))]
 public class MessageAttachment

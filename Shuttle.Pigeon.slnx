@@ -12,13 +12,13 @@
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="Shuttle.Pigeon.Data/Shuttle.Pigeon.Data.csproj" />
   <Project Path="Shuttle.Pigeon.MailKit/Shuttle.Pigeon.MailKit.csproj" />
   <Project Path="Shuttle.Pigeon.Messages/Shuttle.Pigeon.Messages.csproj" />
   <Project Path="Shuttle.Pigeon.Postmark/Shuttle.Pigeon.Postmark.csproj" />
   <Project Path="Shuttle.Pigeon.RestClient/Shuttle.Pigeon.RestClient.csproj" />
   <Project Path="Shuttle.Pigeon.SendGrid/Shuttle.Pigeon.SendGrid.csproj" />
   <Project Path="Shuttle.Pigeon.Server/Shuttle.Pigeon.Server.csproj" />
+  <Project Path="Shuttle.Pigeon.SqlServer/Shuttle.Pigeon.SqlServer.csproj" />
   <Project Path="Shuttle.Pigeon.Tests/Shuttle.Pigeon.Tests.csproj" />
   <Project Path="Shuttle.Pigeon.WebApi/Shuttle.Pigeon.WebApi.csproj" />
   <Project Path="Shuttle.Pigeon/Shuttle.Pigeon.csproj" />

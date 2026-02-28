@@ -10,9 +10,9 @@ namespace Shuttle.Pigeon.RestClient
         {
             Guard.AgainstNull(httpClient);
 
-            Messageses = RestService.For<IMessagesApi>(httpClient);
+            Messages = RestService.For<IMessagesApi>(httpClient);
         }
 
-        public IMessagesApi Messageses { get; }
+        public IMessagesApi Messages { get; }
     }
 }

@@ -1,26 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shuttle.Core.Contract;
-using Shuttle.Esb;
-using Shuttle.Extensions.EFCore;
-using Shuttle.Pigeon.Data;
+using Shuttle.Hopper;
 using Shuttle.Pigeon.Messages.v1;
+using Shuttle.Pigeon.SqlServer;
 
 namespace Shuttle.Pigeon.Server;
 
-public class SendRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbContextFactory, IMessageService messageService)
+public class SendRegisteredMessageHandler(PigeonDbContext dbContext, IMessageService messageService, IBus bus)
     : IMessageHandler<SendRegisteredMessage>
 {
-    private readonly IDbContextFactory<PigeonDbContext> _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
-    private readonly IMessageService _messageService = messageService ?? throw new ArgumentNullException(nameof(messageService));
+    private readonly PigeonDbContext _dbContext = Guard.AgainstNull(dbContext);
+    private readonly IMessageService _messageService = Guard.AgainstNull(messageService);
+    private readonly IBus _bus = Guard.AgainstNull(bus);
 
-    public async Task ProcessMessageAsync(IHandlerContext<SendRegisteredMessage> context)
+    public async Task HandleAsync(SendRegisteredMessage message, CancellationToken cancellationToken = default)
     {
-        var message = Guard.AgainstNull(context).Message;
-
-        using var scope = new DbContextScope();
-        await using var dbContext = await _dbContextFactory.CreateDbContextAsync();
-
-        var model = dbContext.Messages
+        var model = _dbContext.Messages
             .Include(item => item.Recipients)
             .Include(item => item.Attachments)
             .SingleOrDefault(item => item.Id == message.Id);
@@ -44,8 +39,8 @@ public class SendRegisteredMessageHandler(IDbContextFactory<PigeonDbContext> dbC
 
         model.DateSent = DateTime.Now.ToUniversalTime();
 
-        await dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
-        await context.SendAsync(new RemoveRegisteredMessage { Id = message.Id }, builder => builder.Local());
+        await _bus.SendAsync(new RemoveRegisteredMessage { Id = message.Id }, builder => builder.ToSelf(), cancellationToken);
     }
 }

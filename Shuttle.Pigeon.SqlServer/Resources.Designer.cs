@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Shuttle.Pigeon.Data {
+namespace Shuttle.Pigeon.SqlServer {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace Shuttle.Pigeon.Data {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -39,7 +39,7 @@ namespace Shuttle.Pigeon.Data {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shuttle.Pigeon.Data.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shuttle.Pigeon.SqlServer.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -70,7 +70,7 @@ namespace Shuttle.Pigeon.Data {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No &apos;PigeonDataOptions.ConnectionStringName&apos; has been specified..
+        ///   Looks up a localized string similar to No &apos;PigeonSqlServerOptions.ConnectionStringName&apos; has been specified..
         /// </summary>
         internal static string ConnectionStringOptionException {
             get {
@@ -79,7 +79,7 @@ namespace Shuttle.Pigeon.Data {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No &apos;PigeonDataOptions.Schema&apos; has been specified..
+        ///   Looks up a localized string similar to No &apos;PigeonSqlServerOptions.Schema&apos; has been specified..
         /// </summary>
         internal static string SchemaOptionException {
             get {

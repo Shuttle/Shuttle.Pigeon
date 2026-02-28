@@ -1,0 +1,44 @@
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Shuttle.Core.Contract;
+
+namespace Shuttle.Pigeon.MailKit;
+
+public static class PigeonBuilderExtensions
+{
+    extension(PigeonBuilder pigeonBuilder)
+    {
+        public PigeonBuilder TryAddMailKit(IConfiguration configuration)
+        {
+            var options = configuration.GetSection(MailKitOptions.SectionName).Get<MailKitOptions>();
+
+            if (options != null)
+            {
+                Guard.AgainstNull(pigeonBuilder).AddMailKit(builder => { builder.Options = options; });
+            }
+
+            return pigeonBuilder;
+        }
+
+        public PigeonBuilder AddMailKit(Action<MailKitBuilder>? builder = null)
+        {
+            var mailKitBuilder = new MailKitBuilder(Guard.AgainstNull(pigeonBuilder).Services);
+
+            builder?.Invoke(mailKitBuilder);
+
+            pigeonBuilder.Services
+                .AddSingleton<IMessageSender, MailKitMessageSender>()
+                .AddOptions<MailKitOptions>().Configure(options =>
+                {
+                    options.Host = mailKitBuilder.Options.Host;
+                    options.Port = mailKitBuilder.Options.Port;
+                    options.Username = mailKitBuilder.Options.Username;
+                    options.Password = mailKitBuilder.Options.Password;
+                    options.SenderAddress = mailKitBuilder.Options.SenderAddress;
+                    options.SenderDisplayName = mailKitBuilder.Options.SenderDisplayName;
+                });
+
+            return pigeonBuilder;
+        }
+    }
+}

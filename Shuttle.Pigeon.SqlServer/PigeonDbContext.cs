@@ -2,11 +2,11 @@
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Options;
 
-namespace Shuttle.Pigeon.Data;
+namespace Shuttle.Pigeon.SqlServer;
 
 public class PigeonDbContext : DbContext
 {
-    public PigeonDbContext(IOptions<PigeonDataOptions> pigeonDataOptions, DbContextOptions<PigeonDbContext> options) : base(options)
+    public PigeonDbContext(IOptions<PigeonSqlServerOptions> pigeonDataOptions, DbContextOptions<PigeonDbContext> options) : base(options)
     {
     }
 

@@ -3,20 +3,13 @@ using Shuttle.Core.Contract;
 
 namespace Shuttle.Pigeon.Postmark;
 
-public class PostmarkBuilder
+public class PostmarkBuilder(IServiceCollection services)
 {
-    private PostmarkOptions _postmarkOptions = new();
-
-    public PostmarkBuilder(IServiceCollection services)
-    {
-        Services = Guard.AgainstNull(services);
-    }
-
     public PostmarkOptions Options
     {
-        get => _postmarkOptions;
-        set => _postmarkOptions = Guard.AgainstNull(value);
-    }
+        get;
+        set => field = Guard.AgainstNull(value);
+    } = new();
 
-    public IServiceCollection Services { get; }
+    public IServiceCollection Services { get; } = Guard.AgainstNull(services);
 }
