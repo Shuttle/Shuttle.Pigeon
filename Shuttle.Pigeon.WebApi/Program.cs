@@ -43,6 +43,14 @@ public class Program
         webApplicationBuilder.Services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddEndpointsApiExplorer()
+            .AddOpenApi(options =>
+            {
+                options.AddSchemaTransformer((schema, _, _) =>
+                {
+                    schema.Title = schema.Title?.Replace("+", "_");
+                    return Task.CompletedTask;
+                });
+            })
             .AddLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
@@ -87,9 +95,9 @@ public class Program
                     };
                 });
             })
-            .AddAccessClient(builder =>
+            .AddAccessAuthorization(builder =>
             {
-                webApplicationBuilder.Configuration.GetSection(AccessClientOptions.SectionName).Bind(builder.Options);
+                webApplicationBuilder.Configuration.GetSection(AccessAuthorizationOptions.SectionName).Bind(builder.Options);
             })
             .AddCors(options =>
             {
