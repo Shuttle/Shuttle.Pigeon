@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -18,7 +18,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Shuttle.Hopper.AzureStorageQueues" Version="21.0.1-rc1" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.12.50" />
-    <PackageReference Include="Shuttle.Access.RestClient" Version="9.0.0-rc1" />
+    <PackageReference Include="Shuttle.Access.RestClient" Version="9.0.0-rc2" />
   </ItemGroup>
 
   <ItemGroup>

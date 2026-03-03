@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shuttle.Core.Contract" Version="20.0.1" />
+    <PackageReference Include="Shuttle.Core.Contract" Version="21.0.1-rc1" />
   </ItemGroup>
 
   <Target Name="CopyNuGetPackage" AfterTargets="Pack" Condition="'$(NUGET_PACKAGE_FOLDER)' != ''">

@@ -9,34 +9,44 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<PigeonDbCo
 {
     public PigeonDbContext CreateDbContext(string[] args)
     {
-        /*
-            Right-click on `Shuttle.Access.Data` and select `Manage User Secrets`
+        var connectionString = GetConnectionString(args);
+
+        var optionsBuilder = new DbContextOptionsBuilder<PigeonDbContext>();
+
+        optionsBuilder.UseSqlServer(connectionString, sqlServerOptions =>
+        {
+            sqlServerOptions.MigrationsHistoryTable("__EFMigrationsHistory", "pigeon");
+        });
+
+        return new PigeonDbContext(
+            Options.Create(new PigeonSqlServerOptions
             {
-              "ConnectionStrings": {
-                "Pigeon": "Server=.;Database=Pigeon;User ID=<user>;Password=<password>;Trust Server Certificate=true;"
-              },
-              "Shuttle": {
-                "Pigeon": {
-                  "Data": {
-                    "ConnectionStringName": "Pigeon"
-                  }
-                }
-              }
+                ConnectionString = connectionString
+            }),
+            optionsBuilder.Options);
+    }
+
+    private static string GetConnectionString(string[] args)
+    {
+        for (var i = 0; i < args.Length; i++)
+        {
+            if (!string.Equals(args[i], "--connection", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
             }
-        */
+
+            return i + 1 >= args.Length 
+                ? throw new ArgumentException("Missing value for --connection.") 
+                : args[i + 1];
+        }
+
         var configuration = new ConfigurationBuilder()
             .AddUserSecrets<DesignTimeDbContextFactory>()
             .AddCommandLine(args)
             .Build();
 
-        var optionsBuilder = new DbContextOptionsBuilder<PigeonDbContext>();
-
-        optionsBuilder
-            .UseSqlServer(configuration.GetConnectionString("Pigeon"), sqlServerOptions =>
-            {
-                sqlServerOptions.MigrationsHistoryTable("__EFMigrationsHistory", "pigeon");
-            });
-
-        return new(Options.Create(new PigeonSqlServerOptions()), optionsBuilder.Options);
+        return configuration.GetConnectionString("Pigeon")
+               ?? throw new ApplicationException(
+                   "Missing connection string 'Pigeon' (either via --connection or configuration).");
     }
 }

@@ -78,7 +78,7 @@ public class Program
                 pigeonBuilder
                     .UseSqlServer(builder =>
                     {
-                        builder.Options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("Pigeon") ?? "Missing connection string 'Pigeon'.";
+                        builder.Options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("Pigeon") ?? throw new ApplicationException("Missing connection string 'Pigeon'.");
                     });
             })
             .AddAccessClient(clientBuilder =>
