@@ -103,7 +103,7 @@ internal class Program
                         pigeonBuilder
                             .UseSqlServer(builder =>
                             {
-                                builder.Options.ConnectionString = configuration.GetConnectionString("Pigeon") ?? "Missing connection string 'Pigeon'.";
+                                builder.Options.ConnectionString = configuration.GetConnectionString("Pigeon") ?? throw new ApplicationException("Missing connection string 'Pigeon'.");
                             });
                     });
             })
