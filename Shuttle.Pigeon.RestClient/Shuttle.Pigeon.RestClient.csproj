@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Description>A client used to interact with the restful Shuttle.Pigeon web API.</Description>
-    <Version>2.0.0-rc3</Version>
+    <Version>2.0.0-rc4</Version>
     <Authors>Eben Roux</Authors>
     <Company>Shuttle</Company>
     <Copyright>Copyright (c) 2025, Eben Roux</Copyright>
