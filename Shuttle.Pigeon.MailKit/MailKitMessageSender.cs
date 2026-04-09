@@ -2,7 +2,7 @@
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 
 namespace Shuttle.Pigeon.MailKit;
 

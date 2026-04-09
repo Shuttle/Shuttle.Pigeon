@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 using Shuttle.Hopper;
 using Shuttle.Pigeon.Messages.v1;
 using Shuttle.Pigeon.SqlServer;

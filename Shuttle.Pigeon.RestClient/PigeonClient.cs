@@ -1,5 +1,5 @@
 ﻿using Refit;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 using Shuttle.Pigeon.RestClient.v1;
 
 namespace Shuttle.Pigeon.RestClient

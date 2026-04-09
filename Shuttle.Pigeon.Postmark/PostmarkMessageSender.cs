@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using PostmarkDotNet;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 
 namespace Shuttle.Pigeon.Postmark;
 

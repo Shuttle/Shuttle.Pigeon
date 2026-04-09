@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 
 namespace Shuttle.Pigeon.MailKit;
 

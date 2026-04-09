@@ -1,4 +1,4 @@
-﻿using Shuttle.Core.Contract;
+﻿using Shuttle.Contract;
 using Shuttle.Hopper;
 using Shuttle.Pigeon.Messages.v1;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Net;
 using System.Net.Mail;
-using Shuttle.Core.Contract;
+using Shuttle.Contract;
 
 namespace Shuttle.Pigeon.Smtp;
 
