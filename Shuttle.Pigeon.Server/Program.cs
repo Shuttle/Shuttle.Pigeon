@@ -84,6 +84,7 @@ internal class Program
                             }
                         });
                     })
+                    .AddMessageHandlersFrom(typeof(Program).Assembly)
                     .Services
                     .AddPigeon(pigeonBuilder =>
                     {
