@@ -21,6 +21,7 @@
   <Project Path="Shuttle.Pigeon.Server/Shuttle.Pigeon.Server.csproj" />
   <Project Path="Shuttle.Pigeon.SqlServer/Shuttle.Pigeon.SqlServer.csproj" />
   <Project Path="Shuttle.Pigeon.Tests/Shuttle.Pigeon.Tests.csproj" />
+  <Project Path="Shuttle.Pigeon.WebApi.Contracts/Shuttle.Pigeon.WebApi.Contracts.csproj" Id="6e82a7c4-9bf3-4614-8852-c1db257f97c1" />
   <Project Path="Shuttle.Pigeon.WebApi/Shuttle.Pigeon.WebApi.csproj" />
   <Project Path="Shuttle.Pigeon/Shuttle.Pigeon.csproj" />
 </Solution>

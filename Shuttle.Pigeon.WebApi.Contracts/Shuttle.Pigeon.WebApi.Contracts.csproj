@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Description>A client used to interact with the restful Shuttle.Pigeon web API.</Description>
+    <Description>Shuttle.Pigeon web API contracts.</Description>
     <Version>2.0.0-rc6</Version>
     <Authors>Eben Roux</Authors>
     <Company>Shuttle</Company>
@@ -13,7 +13,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Shuttle/Shuttle.Pigeon.git</RepositoryUrl>
-    <PackageTags>mail comms correspondence restclient client</PackageTags>
+    <PackageTags>mail comms correspondence</PackageTags>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
   </PropertyGroup>
 
@@ -28,15 +28,11 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.3" />
-    <PackageReference Include="Refit" Version="10.0.1" />
-    <PackageReference Include="Refit.HttpClientFactory" Version="10.0.1" />
-    <PackageReference Include="Shuttle.Contract" Version="21.0.1-rc3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Shuttle.Pigeon.WebApi.Contracts\Shuttle.Pigeon.WebApi.Contracts.csproj" />
-  </ItemGroup>
+  <Target Name="CopyNuGetPackage" AfterTargets="Pack" Condition="'$(NUGET_PACKAGE_FOLDER)' != ''">
+    <Message Text="Removing cached NuGet package '$(USERPROFILE)\.nuget\packages\$(AssemblyName)\$(Version)'..." Importance="high" />
+    <RemoveDir Directories="$(USERPROFILE)\.nuget\packages\$(AssemblyName)\$(Version)" />
+    <Message Text="Copying NuGet package to '$(NUGET_PACKAGE_FOLDER)'..." Importance="high" />
+    <Copy SourceFiles="bin\$(Configuration)\$(AssemblyName).$(Version).nupkg" DestinationFolder="$(NUGET_PACKAGE_FOLDER)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

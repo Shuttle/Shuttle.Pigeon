@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using Asp.Versioning.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +7,8 @@ using Shuttle.Hopper;
 using Shuttle.Pigeon.Messages.v1;
 using Shuttle.Pigeon.SqlServer;
 using Shuttle.Pigeon.SqlServer.Models;
+using Attachment = Shuttle.Pigeon.WebApi.Contracts.v1.Attachment;
+using SendMessage = Shuttle.Pigeon.WebApi.Contracts.v1.SendMessage;
 
 namespace Shuttle.Pigeon.WebApi;
 
@@ -43,9 +45,48 @@ public static class MessageEndpoints
         return app;
     }
 
+    private static async Task Post(PigeonDbContext dbContext, [FromBody] SendMessage model)
+    {
+        dbContext.Messages.Add(new()
+        {
+            Id = model.Id,
+            Channel = model.Channel,
+            Sender = model.Sender,
+            Subject = model.Subject,
+            Content = model.Content,
+            ContentType = model.ContentType,
+            DateRegistered = DateTime.Now.ToUniversalTime(),
+            Recipients = model.Recipients.Select(item => new MessageRecipient { Identifier = item.Identifier, Type = item.Type }).ToList()
+        });
+
+        await dbContext.SaveChangesAsync();
+    }
+
+    private static async Task<IResult> PostAttachment(PigeonDbContext dbContext, [FromBody] Attachment model, Guid id)
+    {
+        var message = await dbContext.Messages.Include(message => message.Attachments)
+            .FirstOrDefaultAsync(item => item.Id == id);
+
+        if (message == null)
+        {
+            return Results.NotFound();
+        }
+
+        if (message.Attachments.Any(item => item.Name == model.Name))
+        {
+            return Results.BadRequest();
+        }
+
+        message.Attachments.Add(new() { Name = model.Name, ContentType = model.ContentType, Content = model.Content });
+
+        await dbContext.SaveChangesAsync();
+
+        return Results.Ok();
+    }
+
     private static async Task<IResult> PostSendMessage(IBus bus, [FromBody] SendMessage model)
     {
-        await bus.SendAsync(model);
+        await bus.SendAsync(ToMessage(model));
 
         return Results.Accepted();
     }
@@ -73,42 +114,18 @@ public static class MessageEndpoints
         return Results.Accepted();
     }
 
-    private static async Task<IResult> PostAttachment(PigeonDbContext dbContext, [FromBody] Attachment model, Guid id)
+    private static Messages.v1.SendMessage ToMessage(SendMessage contract)
     {
-        var message = await dbContext.Messages.Include(message => message.Attachments)
-            .FirstOrDefaultAsync(item => item.Id == id);
-
-        if (message == null)
+        return new()
         {
-            return Results.NotFound();
-        }
-
-        if (message.Attachments.Any(item => item.Name == model.Name))
-        {
-            return Results.BadRequest();
-        }
-
-        message.Attachments.Add(new() { Name = model.Name, ContentType = model.ContentType, Content = model.Content });
-
-        await dbContext.SaveChangesAsync();
-
-        return Results.Ok();
-    }
-
-    private static async Task Post(PigeonDbContext dbContext, [FromBody] SendMessage model)
-    {
-        dbContext.Messages.Add(new()
-        {
-            Id = model.Id,
-            Channel = model.Channel,
-            Sender = model.Sender,
-            Subject = model.Subject,
-            Content = model.Content,
-            ContentType = model.ContentType,
-            DateRegistered = DateTime.Now.ToUniversalTime(),
-            Recipients = model.Recipients.Select(item => new MessageRecipient { Identifier = item.Identifier, Type = item.Type }).ToList()
-        });
-
-        await dbContext.SaveChangesAsync();
+            Channel = contract.Channel,
+            Content = contract.Content,
+            ContentType = contract.ContentType,
+            Id = contract.Id,
+            Parameters = contract.Parameters.Select(p => new Messages.v1.SendMessage.Parameter { Name = p.Name, Value = p.Value }).ToList(),
+            Recipients = contract.Recipients.Select(r => new Messages.v1.SendMessage.Recipient { Identifier = r.Identifier, Type = r.Type }).ToList(),
+            Sender = contract.Sender,
+            Subject = contract.Subject
+        };
     }
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Shuttle.Pigeon.Messages\Shuttle.Pigeon.Messages.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon.SqlServer\Shuttle.Pigeon.SqlServer.csproj" />
+    <ProjectReference Include="..\Shuttle.Pigeon.WebApi.Contracts\Shuttle.Pigeon.WebApi.Contracts.csproj" />
     <ProjectReference Include="..\Shuttle.Pigeon\Shuttle.Pigeon.csproj" />
   </ItemGroup>
 

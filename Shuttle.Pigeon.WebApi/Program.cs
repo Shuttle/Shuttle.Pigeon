@@ -56,23 +56,23 @@ public class Program
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddSerilog();
             })
-            .AddHopper(hopperBuilder =>
+            .AddHopper(options =>
             {
-                webApplicationBuilder.Configuration.GetSection(HopperOptions.SectionName).Bind(hopperBuilder.Options);
-
-                hopperBuilder
-                    .UseAzureStorageQueues(builder =>
-                    {
-                        var queueOptions = webApplicationBuilder.Configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();
-
-                        if (string.IsNullOrWhiteSpace(queueOptions.StorageAccount))
-                        {
-                            queueOptions.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
-                        }
-
-                        builder.AddOptions("azure", queueOptions);
-                    });
+                webApplicationBuilder.Configuration.GetSection(HopperOptions.SectionName).Bind(options);
             })
+            .UseAzureStorageQueues(builder =>
+            {
+                builder.Configure("azure", options =>
+                {
+                    webApplicationBuilder.Configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Bind(options);
+
+                    if (string.IsNullOrWhiteSpace(options.StorageAccount))
+                    {
+                        options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
+                    }
+                });
+            })
+            .Services
             .AddPigeon(pigeonBuilder =>
             {
                 pigeonBuilder

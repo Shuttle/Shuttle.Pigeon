@@ -31,7 +31,7 @@
     "Access": "Data Source=database;Initial Catalog=Pigeon;user id=sa;password=Pass!000;TrustServerCertificate=true"
   },
   "Shuttle": {
-    "ServiceBus": {
+    "Hopper": {
       "MessageRoutes": [
         {
           "Uri": "azuresq://azure/pigeon-server-work",

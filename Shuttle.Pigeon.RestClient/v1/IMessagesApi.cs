@@ -1,5 +1,5 @@
-﻿using Refit;
-using Shuttle.Pigeon.Messages.v1;
+using Refit;
+using Shuttle.Pigeon.WebApi.Contracts.v1;
 
 namespace Shuttle.Pigeon.RestClient.v1;
 

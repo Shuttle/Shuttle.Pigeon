@@ -3,21 +3,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using Shuttle.Pipelines;
-using Shuttle.Reflection;
-using Shuttle.TransactionScope;
 using Shuttle.Hopper;
 using Shuttle.Hopper.AzureStorageQueues;
 using Shuttle.Pigeon.MailKit;
 using Shuttle.Pigeon.Postmark;
 using Shuttle.Pigeon.SendGrid;
 using Shuttle.Pigeon.SqlServer;
+using Shuttle.Pipelines;
+using Shuttle.Reflection;
 
 namespace Shuttle.Pigeon.Server;
 
 internal class Program
 {
-    static async Task Main()
+    private static async Task Main()
     {
         Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
 
@@ -48,50 +47,44 @@ internal class Program
             .ConfigureServices(services =>
             {
                 services
-                    .AddTransactionScope(builder => builder.Configure(options =>
-                    {
-                        options.Enabled = false;
-                    }))
                     .AddSingleton(configuration)
                     .AddLogging(loggingBuilder =>
                     {
                         loggingBuilder.ClearProviders();
                         loggingBuilder.AddSerilog();
                     })
-                    .AddPipelines(pipelineBuilder =>
+                    .AddPipelines(options =>
                     {
-                        pipelineBuilder.Configure(options =>
+                        options.PipelineFailed += (eventArgs, _) =>
                         {
-                            options.PipelineFailed += (eventArgs, _) =>
-                            {
-                                Log.Error(eventArgs.Pipeline.Exception?.AllMessages() ?? string.Empty);
-                                return Task.CompletedTask;
-                            };
+                            Log.Error(eventArgs.Pipeline.Exception?.AllMessages() ?? string.Empty);
+                            return Task.CompletedTask;
+                        };
 
-                            options.PipelineRecursiveException += (eventArgs, _) =>
+                        options.PipelineRecursiveException += (eventArgs, _) =>
+                        {
+                            Log.Error(eventArgs.Pipeline.Exception?.AllMessages() ?? string.Empty);
+                            return Task.CompletedTask;
+                        };
+                    })
+                    .Services
+                    .AddHopper(options =>
+                    {
+                        configuration.GetSection(HopperOptions.SectionName).Bind(options);
+                    })
+                    .UseAzureStorageQueues(builder =>
+                    {
+                        builder.Configure("azure", options =>
+                        {
+                            configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Bind(options);
+
+                            if (string.IsNullOrWhiteSpace(options.StorageAccount))
                             {
-                                Log.Error(eventArgs.Pipeline.Exception?.AllMessages() ?? string.Empty);
-                                return Task.CompletedTask;
-                            };
+                                options.ConnectionString = configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
+                            }
                         });
                     })
-                    .AddHopper(hopperBuilder =>
-                    {
-                        configuration.GetSection(HopperOptions.SectionName).Bind(hopperBuilder.Options);
-
-                        hopperBuilder
-                            .UseAzureStorageQueues(builder =>
-                            {
-                                var queueOptions = configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Get<AzureStorageQueueOptions>() ?? new();
-
-                                if (string.IsNullOrWhiteSpace(queueOptions.StorageAccount))
-                                {
-                                    queueOptions.ConnectionString = configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
-                                }
-
-                                builder.AddOptions("azure", queueOptions);
-                            });
-                    })
+                    .Services
                     .AddPigeon(pigeonBuilder =>
                     {
                         configuration.GetSection(PigeonOptions.SectionName).Bind(pigeonBuilder.Options);

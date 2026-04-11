@@ -31,14 +31,14 @@
     "azure": "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://azurite"
   },
   "Shuttle": {
-    "ServiceBus": {
+    "Hopper": {
       "Inbox": {
-        "WorkQueueUri": "azuresq://azure/pigeon-server-work",
-        "DeferredQueueUri": "azuresq://azure/pigeon-server-deferred",
-        "ErrorQueueUri": "azuresq://azure/pigeon-server-error",
+        "WorkTransportUri": "azuresq://azure/pigeon-server-work",
+        "DeferredTransportUri": "azuresq://azure/pigeon-server-deferred",
+        "ErrorTransportUri": "azuresq://azure/pigeon-server-error",
         "MaximumFailureCount": 8,
         "ThreadCount": 1,
-        "DurationToIgnoreOnFailure": [
+        "IgnoreOnFailureDurations": [
           "00:00:01",
           "00:00:01",
           "00:00:01",
