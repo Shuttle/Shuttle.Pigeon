@@ -81,24 +81,25 @@ public class Program
                         builder.Options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("Pigeon") ?? throw new ApplicationException("Missing connection string 'Pigeon'.");
                     });
             })
-            .AddAccessClient(clientBuilder =>
+            .AddAccessClient(options =>
             {
-                webApplicationBuilder.Configuration.GetSection(AccessClientOptions.SectionName).Bind(clientBuilder.Options);
-
-                clientBuilder.UseBearerAuthenticationProvider(providerBuilder =>
+                webApplicationBuilder.Configuration.GetSection(AccessClientOptions.SectionName).Bind(options);
+            })
+            .UseBearerAuthenticationProvider(options =>
+            {
+                options.GetBearerAuthenticationContextAsync = async (_, _) =>
                 {
-                    providerBuilder.Options.GetBearerAuthenticationContextAsync = async (_, _) =>
-                    {
-                        var token = (await new DefaultAzureCredential().GetTokenAsync(new(["https://management.azure.com/.default"]), CancellationToken.None)).Token;
+                    var token = (await new DefaultAzureCredential().GetTokenAsync(new(["https://management.azure.com/.default"]), CancellationToken.None)).Token;
 
-                        return new(token);
-                    };
-                });
+                    return new(token);
+                };
             })
-            .AddAccessAuthorization(builder =>
+            .Services
+            .AddAccessAuthorization(options =>
             {
-                webApplicationBuilder.Configuration.GetSection(AccessAuthorizationOptions.SectionName).Bind(builder.Options);
+                webApplicationBuilder.Configuration.GetSection(AccessAuthorizationOptions.SectionName).Bind(options);
             })
+            .Services
             .AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
