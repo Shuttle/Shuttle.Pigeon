@@ -18,7 +18,7 @@
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Shuttle.Hopper.AzureStorageQueues" Version="21.0.1-rc4" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.13.3" />
-    <PackageReference Include="Shuttle.Access.RestClient" Version="9.0.0-rc10" />
+    <PackageReference Include="Shuttle.Access.RestClient" Version="9.0.0-rc9.1" />
   </ItemGroup>
 
   <ItemGroup>
