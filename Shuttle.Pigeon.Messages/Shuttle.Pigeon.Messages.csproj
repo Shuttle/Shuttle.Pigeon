@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Description>Messages for use with Shuttle.Pigeon implementations.</Description>
-    <Version>2.0.0-rc8</Version>
+    <Version>2.0.1</Version>
     <Authors>Eben Roux</Authors>
     <Company>Shuttle</Company>
     <Copyright>Copyright (c) 2025, Eben Roux</Copyright>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Shuttle.Contract" Version="21.0.1-rc3" />
+    <PackageReference Include="Shuttle.Contract" Version="21.0.1" />
   </ItemGroup>
 
   <Target Name="CopyNuGetPackage" AfterTargets="Pack" Condition="'$(NUGET_PACKAGE_FOLDER)' != ''">
