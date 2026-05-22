@@ -8,7 +8,7 @@ namespace Shuttle.Pigeon.MailKit;
 
 public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMessageSender
 {
-    private readonly MailKitOptions _mailKitOptions = Guard.AgainstNull(Guard.AgainstNull(mailKitOptions).Value);
+    private readonly MailKitOptions _mailKitOptions = Guard.AgainstNull(mailKitOptions).Value;
 
     public string Channel => "email";
     public string Name => "mailKit";
@@ -27,17 +27,17 @@ public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMe
             {
                 case RecipientType.To:
                 {
-                    mimeMessage.To.Add(new MailboxAddress(recipient.HasDisplayName ? recipient.DisplayName : recipient.Identifier, recipient.Identifier));
+                    mimeMessage.To.Add(new MailboxAddress(recipient.DisplayName, recipient.Identifier));
                     break;
                 }
                 case RecipientType.Cc:
                 {
-                    mimeMessage.Cc.Add(new MailboxAddress(recipient.HasDisplayName ? recipient.DisplayName : recipient.Identifier, recipient.Identifier));
+                    mimeMessage.Cc.Add(new MailboxAddress(recipient.DisplayName, recipient.Identifier));
                     break;
                 }
                 case RecipientType.Bcc:
                 {
-                    mimeMessage.Bcc.Add(new MailboxAddress(recipient.HasDisplayName ? recipient.DisplayName : recipient.Identifier, recipient.Identifier));
+                    mimeMessage.Bcc.Add(new MailboxAddress(recipient.DisplayName, recipient.Identifier));
                     break;
                 }
             }
@@ -57,15 +57,14 @@ public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMe
 
         foreach (var attachment in message.GetAttachments())
         {
-            using var stream = new MemoryStream(attachment.Content);
-            await bodyBuilder.Attachments.AddAsync(attachment.Name, stream, ContentType.Parse(attachment.ContentType), CancellationToken.None);
+            await bodyBuilder.Attachments.AddAsync(attachment.Name, new MemoryStream(attachment.Content), ContentType.Parse(attachment.ContentType), CancellationToken.None);
         }
 
         mimeMessage.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
 
-        await client.ConnectAsync(message.FindParameter("Host")?.GetValue<string>() ?? _mailKitOptions.Host, message.FindParameter("Port")?.GetValue<int>() ?? _mailKitOptions.Port, SecureSocketOptions.StartTls, cancellationToken); 
+        await client.ConnectAsync(message.FindParameter("Host")?.GetValue<string>() ?? _mailKitOptions.Host, message.FindParameter("Port")?.GetValue<int>() ?? _mailKitOptions.Port, SecureSocketOptions.Auto, cancellationToken); 
         await client.AuthenticateAsync(message.FindParameter("Username")?.GetValue<string>() ?? _mailKitOptions.Username, message.FindParameter("Password")?.GetValue<string>() ?? _mailKitOptions.Password, cancellationToken);
         await client.SendAsync(mimeMessage, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);

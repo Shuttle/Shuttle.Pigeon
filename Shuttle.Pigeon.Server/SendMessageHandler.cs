@@ -12,6 +12,7 @@ public class SendMessageHandler(IMessageService messageService) : IMessageHandle
     {
         var pigeonMessage = new Message(message.Id, message.Channel, message.Content, message.ContentType)
             .AddRecipients(message.Recipients.Select(item => new Message.Recipient(item.Identifier, (RecipientType)item.Type)))
+            .AddParameters(message.Parameters.Select(item => new Message.Parameter(item.Name, item.Value)))
             .WithSubject(message.Subject);
 
         if (!string.IsNullOrWhiteSpace(message.Sender))

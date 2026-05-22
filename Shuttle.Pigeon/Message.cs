@@ -45,6 +45,16 @@ public class Message(Guid id, string channel, string content, string contentType
         return this;
     }
 
+    public Message AddParameters(IEnumerable<Parameter> parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            AddParameter(parameter);
+        }
+
+        return this;
+    }
+
     public Message AddRecipient(Recipient recipient)
     {
         Guard.AgainstNull(recipient);
