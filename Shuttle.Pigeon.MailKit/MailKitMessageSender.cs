@@ -3,6 +3,8 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using Shuttle.Contract;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Shuttle.Pigeon.MailKit;
 
@@ -63,6 +65,22 @@ public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMe
         mimeMessage.Body = bodyBuilder.ToMessageBody();
 
         using var client = new SmtpClient();
+
+        var dnsName = message.FindParameter("DnsName")?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(dnsName))
+        {
+            client.ServerCertificateValidationCallback = (sender, certificate, _, errors) =>
+            {
+                if (errors == SslPolicyErrors.None)
+                {
+                    return true;
+                }
+
+                return certificate is X509Certificate2 cert &&
+                       cert.GetNameInfo(X509NameType.DnsName, false).Equals(dnsName, StringComparison.OrdinalIgnoreCase);
+            };
+        }
 
         await client.ConnectAsync(message.FindParameter("Host")?.GetValue<string>() ?? _mailKitOptions.Host, message.FindParameter("Port")?.GetValue<int>() ?? _mailKitOptions.Port, SecureSocketOptions.Auto, cancellationToken); 
         await client.AuthenticateAsync(message.FindParameter("Username")?.GetValue<string>() ?? _mailKitOptions.Username, message.FindParameter("Password")?.GetValue<string>() ?? _mailKitOptions.Password, cancellationToken);
