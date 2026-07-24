@@ -8,10 +8,8 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Shuttle.Pigeon.MailKit;
 
-public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMessageSender
+public class MailKitMessageSender(IOptions<PigeonOptions> pigeonOptions, IOptions<MailKitOptions> mailKitOptions) : IMessageSender
 {
-    private readonly MailKitOptions _mailKitOptions = Guard.AgainstNull(mailKitOptions).Value;
-
     public string Channel => "email";
     public string Name => "mailKit";
 
@@ -21,7 +19,7 @@ public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMe
 
         var mimeMessage = new MimeMessage();
 
-        mimeMessage.From.Add(message.HasSender ? new(message.SenderDisplayName, message.Sender) : new MailboxAddress(_mailKitOptions.SenderDisplayName, _mailKitOptions.SenderAddress));
+        mimeMessage.From.Add(message.HasSender ? new(message.SenderDisplayName, message.Sender) : new MailboxAddress(mailKitOptions.Value.SenderDisplayName, mailKitOptions.Value.SenderAddress));
 
         foreach (var recipient in message.Recipients)
         {
@@ -66,13 +64,13 @@ public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMe
 
         using var client = new SmtpClient();
 
-        var dnsName = message.FindParameter("DnsName")?.GetValue<string>();
+        var dnsName = message.FindParameter("DnsName")?.GetValue<string>() ?? string.Empty;
 
         if (!string.IsNullOrEmpty(dnsName))
         {
             client.ServerCertificateValidationCallback = (sender, certificate, _, errors) =>
             {
-                if (errors == SslPolicyErrors.None)
+                if (!pigeonOptions.Value.ValidateServerCertificate || errors == SslPolicyErrors.None || dnsName == "*")
                 {
                     return true;
                 }
@@ -82,8 +80,8 @@ public class MailKitMessageSender(IOptions<MailKitOptions> mailKitOptions) : IMe
             };
         }
 
-        await client.ConnectAsync(message.FindParameter("Host")?.GetValue<string>() ?? _mailKitOptions.Host, message.FindParameter("Port")?.GetValue<int>() ?? _mailKitOptions.Port, SecureSocketOptions.Auto, cancellationToken); 
-        await client.AuthenticateAsync(message.FindParameter("Username")?.GetValue<string>() ?? _mailKitOptions.Username, message.FindParameter("Password")?.GetValue<string>() ?? _mailKitOptions.Password, cancellationToken);
+        await client.ConnectAsync(message.FindParameter("Host")?.GetValue<string>() ?? mailKitOptions.Value.Host, message.FindParameter("Port")?.GetValue<int>() ?? mailKitOptions.Value.Port, SecureSocketOptions.Auto, cancellationToken); 
+        await client.AuthenticateAsync(message.FindParameter("Username")?.GetValue<string>() ?? mailKitOptions.Value.Username, message.FindParameter("Password")?.GetValue<string>() ?? mailKitOptions.Value.Password, cancellationToken);
         await client.SendAsync(mimeMessage, cancellationToken);
         await client.DisconnectAsync(true, cancellationToken);
     }

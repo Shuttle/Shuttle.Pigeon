@@ -4,6 +4,7 @@ public class PigeonOptions
 {
     public const string SectionName = "Shuttle:Pigeon";
 
+    public bool ValidateServerCertificate { get; set; } = true;
     public List<ChannelDefaultMessageSender> ChannelDefaultMessageSenders { get; set; } = [];
 }
 
