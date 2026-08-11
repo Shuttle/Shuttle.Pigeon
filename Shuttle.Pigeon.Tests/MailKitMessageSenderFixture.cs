@@ -19,7 +19,7 @@ public class MailKitMessageSenderFixture
         var options = configuration.GetSection(MailKitOptions.SectionName).Get<MailKitOptions>()!;
         var mailOptions = configuration.GetSection(MailOptions.SectionName).Get<MailOptions>()!;
 
-        var sender = new MailKitMessageSender(Options.Create(options));
+        var sender = new MailKitMessageSender(Options.Create(new PigeonOptions()), Options.Create(options));
 
         Assert.That(async () => await sender.SendAsync(
             new Message(Guid.NewGuid(), "email", "<h1>Hello</h1> <b>World</b>", "text/html")

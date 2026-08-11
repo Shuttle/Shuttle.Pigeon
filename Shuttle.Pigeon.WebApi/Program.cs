@@ -1,9 +1,7 @@
 using Asp.Versioning;
-using Azure.Identity;
 using Scalar.AspNetCore;
 using Serilog;
 using Shuttle.Access.AspNetCore;
-using Shuttle.Access.RestClient;
 using Shuttle.Hopper;
 using Shuttle.Hopper.AzureStorageQueues;
 using Shuttle.Pigeon.SqlServer;
@@ -81,20 +79,6 @@ public class Program
                         builder.Options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("Pigeon") ?? throw new ApplicationException("Missing connection string 'Pigeon'.");
                     });
             })
-            .AddAccessClient(options =>
-            {
-                webApplicationBuilder.Configuration.GetSection(AccessClientOptions.SectionName).Bind(options);
-            })
-            .UseBearerAuthenticationProvider(options =>
-            {
-                options.GetBearerAuthenticationContextAsync = async (_, _) =>
-                {
-                    var token = (await new DefaultAzureCredential().GetTokenAsync(new(["https://management.azure.com/.default"]), CancellationToken.None)).Token;
-
-                    return new(token);
-                };
-            })
-            .Services
             .AddAccessAuthorization(options =>
             {
                 webApplicationBuilder.Configuration.GetSection(AccessAuthorizationOptions.SectionName).Bind(options);
