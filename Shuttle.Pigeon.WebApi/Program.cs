@@ -38,17 +38,31 @@ public class Program
             .ReadFrom.Configuration(webApplicationBuilder.Configuration)
             .CreateLogger();
 
+        var apiVersion1 = new ApiVersion(1, 0);
+
         webApplicationBuilder.Services
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-            .AddEndpointsApiExplorer()
+            .AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = apiVersion1;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            })
             .AddOpenApi(options =>
             {
-                options.AddSchemaTransformer((schema, _, _) =>
+                options.Document.AddSchemaTransformer((schema, _, _) =>
                 {
                     schema.Title = schema.Title?.Replace("+", "_");
                     return Task.CompletedTask;
                 });
-            })
+            });
+
+        webApplicationBuilder.Services
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
@@ -95,21 +109,6 @@ public class Program
                 });
             });
 
-        var apiVersion1 = new ApiVersion(1, 0);
-
-        webApplicationBuilder.Services
-            .AddApiVersioning(options =>
-            {
-                options.DefaultApiVersion = apiVersion1;
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.ReportApiVersions = true;
-            })
-            .AddApiExplorer(options =>
-            {
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
-            });
-
         var app = webApplicationBuilder.Build();
 
         var versionSet = app.NewApiVersionSet()
@@ -121,7 +120,7 @@ public class Program
             .UseCors()
             .UseAccessAuthorization();
 
-        app.MapOpenApi();
+        app.MapOpenApi().WithDocumentPerVersion();
         app.MapScalarApiReference(options =>
         {
             options
