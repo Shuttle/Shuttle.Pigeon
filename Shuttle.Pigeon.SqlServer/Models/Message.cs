@@ -30,6 +30,7 @@ public class Message
     public DateTime? DateAccepted { get; set; }
     public DateTime? DateSent { get; set; }
 
+    public List<MessageParameter> Parameters { get; set; } = [];
     public List<MessageRecipient> Recipients { get; set; } = [];
     public List<MessageAttachment> Attachments { get; set; } = [];
 }

@@ -17,6 +17,7 @@ public class SendRegisteredMessageHandler(PigeonDbContext dbContext, IMessageSer
     {
         var model = _dbContext.Messages
             .Include(item => item.Recipients)
+            .Include(item => item.Parameters)
             .Include(item => item.Attachments)
             .SingleOrDefault(item => item.Id == message.Id);
 
@@ -27,6 +28,7 @@ public class SendRegisteredMessageHandler(PigeonDbContext dbContext, IMessageSer
 
         var pigeonMessage = new Message(message.Id, model.Channel, model.Content, model.ContentType)
             .AddRecipients(model.Recipients.Select(item => new Message.Recipient(item.Identifier, (RecipientType)item.Type)))
+            .AddParameters(model.Parameters.Select(item => new Message.Parameter(item.Name, item.Value)))
             .WithSubject(model.Subject)
             .WithSender(model.Sender);
 

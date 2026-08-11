@@ -12,6 +12,7 @@ public class PigeonDbContext : DbContext
 
     public DbSet<Models.Message> Messages { get; set; } = null!;
     public DbSet<Models.MessageAttachment> MessageAttachments { get; set; } = null!;
+    public DbSet<Models.MessageParameter> MessageParameters { get; set; } = null!;
     public DbSet<Models.MessageRecipient> MessageRecipients { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -21,6 +22,12 @@ public class PigeonDbContext : DbContext
         modelBuilder.Entity<Models.MessageAttachment>()
             .HasOne(p => p.Message)
             .WithMany(b => b.Attachments)
+            .HasForeignKey(p => p.MessageId) 
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Models.MessageParameter>()
+            .HasOne(p => p.Message)
+            .WithMany(b => b.Parameters)
             .HasForeignKey(p => p.MessageId) 
             .OnDelete(DeleteBehavior.Cascade);
 
