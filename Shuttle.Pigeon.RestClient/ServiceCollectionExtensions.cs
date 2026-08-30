@@ -9,13 +9,9 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddPigeonClient(Action<PigeonClientBuilder>? builder = null)
+        public IServiceCollection AddPigeonClient(Action<PigeonClientOptions> configureOptions)
         {
-            var restClientBuilder = new PigeonClientBuilder(Guard.AgainstNull(services));
-
-            builder?.Invoke(restClientBuilder);
-
-            services.AddOptions<PigeonClientOptions>().Configure(options => { options.BaseAddress = restClientBuilder.Options.BaseAddress; });
+            services.AddOptions<PigeonClientOptions>().Configure(configureOptions);
 
             services.TryAddSingleton<IPigeonClient, PigeonClient>();
 
