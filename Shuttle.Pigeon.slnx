@@ -13,6 +13,7 @@
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="Shuttle.Pigeon.Hosting/Shuttle.Pigeon.Hosting.csproj" />
   <Project Path="Shuttle.Pigeon.MailKit/Shuttle.Pigeon.MailKit.csproj" />
   <Project Path="Shuttle.Pigeon.Messages/Shuttle.Pigeon.Messages.csproj" />
   <Project Path="Shuttle.Pigeon.Postmark/Shuttle.Pigeon.Postmark.csproj" />

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Shuttle.Hopper;
-using Shuttle.Hopper.AzureStorageQueues;
+using Shuttle.Pigeon.Hosting;
 using Shuttle.Pigeon.MailKit;
 using Shuttle.Pigeon.Postmark;
 using Shuttle.Pigeon.SendGrid;
@@ -72,18 +72,7 @@ internal class Program
                     {
                         configuration.GetSection(HopperOptions.SectionName).Bind(options);
                     })
-                    .UseAzureStorageQueues(builder =>
-                    {
-                        builder.Configure("azure", options =>
-                        {
-                            configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Bind(options);
-
-                            if (string.IsNullOrWhiteSpace(options.StorageAccount))
-                            {
-                                options.ConnectionString = configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
-                            }
-                        });
-                    })
+                    .UseConfiguredTransports(configuration)
                     .AddMessageHandlersFrom(typeof(Program).Assembly)
                     .Services
                     .AddPigeon(pigeonBuilder =>

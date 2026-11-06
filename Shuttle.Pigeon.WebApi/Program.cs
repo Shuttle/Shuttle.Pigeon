@@ -3,7 +3,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Shuttle.Access.AspNetCore;
 using Shuttle.Hopper;
-using Shuttle.Hopper.AzureStorageQueues;
+using Shuttle.Pigeon.Hosting;
 using Shuttle.Pigeon.SqlServer;
 
 namespace Shuttle.Pigeon.WebApi;
@@ -72,18 +72,7 @@ public class Program
             {
                 webApplicationBuilder.Configuration.GetSection(HopperOptions.SectionName).Bind(options);
             })
-            .UseAzureStorageQueues(builder =>
-            {
-                builder.Configure("azure", options =>
-                {
-                    webApplicationBuilder.Configuration.GetSection($"{AzureStorageQueueOptions.SectionName}:Pigeon").Bind(options);
-
-                    if (string.IsNullOrWhiteSpace(options.StorageAccount))
-                    {
-                        options.ConnectionString = webApplicationBuilder.Configuration.GetConnectionString("azure") ?? throw new ApplicationException("Missing connection string 'azure'.");
-                    }
-                });
-            })
+            .UseConfiguredTransports(webApplicationBuilder.Configuration)
             .Services
             .AddPigeon(pigeonBuilder =>
             {

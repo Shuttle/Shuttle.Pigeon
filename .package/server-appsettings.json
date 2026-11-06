@@ -31,6 +31,11 @@
     "azure": "UseDevelopmentStorage=true;DevelopmentStorageProxyUri=http://azurite"
   },
   "Shuttle": {
+    "AzureStorageQueues": {
+      "azure": {
+        "StorageAccount": ""
+      }
+    },
     "Hopper": {
       "Inbox": {
         "WorkTransportUri": "azuresq://azure/pigeon-server-work",
