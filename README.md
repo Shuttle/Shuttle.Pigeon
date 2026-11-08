@@ -9,8 +9,8 @@ A correspondence sending service.
 
 | Transport | Section | URI |
 | --- | --- | --- |
-| Azure Storage Queues | `Shuttle:AzureStorageQueues:{name}` | `azuresq://{name}/{queue}` |
-| RabbitMQ | `Shuttle:RabbitMQ:{name}` | `rabbitmq://{name}/{queue}` |
+| Azure Storage Queues | `Shuttle:Hopper:AzureStorageQueues:{name}` | `azuresq://{name}/{queue}` |
+| RabbitMQ | `Shuttle:Hopper:RabbitMQ:{name}` | `rabbitmq://{name}/{queue}` |
 
 At least one transport section is required. For Azure Storage Queues, when neither `StorageAccount` nor `ConnectionString` is set, the connection string named `{name}` is used.
 
@@ -19,14 +19,14 @@ Example using RabbitMQ:
 ```json
 {
   "Shuttle": {
-    "RabbitMQ": {
-      "local": {
-        "Host": "localhost",
-        "Username": "shuttle",
-        "Password": "shuttle!"
-      }
-    },
     "Hopper": {
+      "RabbitMQ": {
+        "local": {
+          "Host": "localhost",
+          "Username": "shuttle",
+          "Password": "shuttle!"
+        }
+      },
       "Inbox": {
         "WorkTransportUri": "rabbitmq://local/pigeon-server-work",
         "DeferredTransportUri": "rabbitmq://local/pigeon-server-deferred",
